@@ -1,0 +1,14 @@
+name: SkyMaster
+
+services:
+  skymaster:
+    container_name: SkyMaster
+    image: ghcr.io/skymaster:latest
+    environment:
+      - 'SPRING_MONGODB_HOST=<host>'
+      - 'SPRING_MONGODB_PORT=<port>'
+      - 'SPRING_MONGODB_DATABASE=<database>'
+      - 'SPRING_MONGODB=USERNAME=<username>'
+      - 'SPRING_MONGODB_PASSWORD=<password>'
+    ports:
+      - '8080:8080'

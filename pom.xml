@@ -17,6 +17,9 @@
     <properties>
         <java.version>21</java.version>
         <vaadin.version>25.2.0</vaadin.version>
+
+        <sonar.organization>pgatzka</sonar.organization>
+        <sonar.projectKey>io.github.pgatzka:skymaster</sonar.projectKey>
     </properties>
 
     <repositories>
@@ -185,6 +188,11 @@
                     </java>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>5.7.0.6970</version>
+            </plugin>
         </plugins>
     </build>
 
@@ -227,6 +235,29 @@
                         <configuration>
                             <trimStackTrace>false</trimStackTrace>
                             <enableAssertions>true</enableAssertions>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>production</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.vaadin</groupId>
+                        <artifactId>vaadin-maven-plugin</artifactId>
+                        <version>${vaadin.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>build-frontend</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <forceProductionBuild>true</forceProductionBuild>
+                            <ciBuild>true</ciBuild>
                         </configuration>
                     </plugin>
                 </plugins>
