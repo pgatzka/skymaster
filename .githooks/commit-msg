@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -u
+
+COMMIT_MESSAGE_FILE="$1"
+COMMIT_MESSAGE=$(cat "$COMMIT_MESSAGE_FILE")
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+ISSUE_NUMBER=$(echo "$BRANCH" | sed -nE 's/^([0-9]+)-[a-z-]+$/\1/p')
+
+if [[ -z "$ISSUE_NUMBER" ]]; then
+    echo "Branch '$BRANCH' doesn't match pattern <issue-number>-<name>" >&2
+    exit 1
+fi
+
+if [[ ! "$COMMIT_MESSAGE" =~ ^\#${ISSUE_NUMBER}\  ]]; then
+    echo "Commit message must start with '#${ISSUE_NUMBER} '" >&2
+    exit 1
+fi

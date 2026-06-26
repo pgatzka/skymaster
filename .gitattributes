@@ -1,0 +1,4 @@
+*                       text=auto
+.githooks/pre-push      text        eol=lf
+.githooks/pre-commit    text        eol=lf
+.githooks/commit-msg    text        eol=lf
