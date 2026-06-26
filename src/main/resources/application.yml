@@ -3,6 +3,12 @@ spring:
     name: skymaster
   main:
     banner-mode: off
+  mongodb:
+    host: localhost
+    port: 27017
+    database: skymaster_dev
+    username: skymaster_dev
+    password: skymaster_dev
 logging:
   level:
     org.atmosphere: warn
