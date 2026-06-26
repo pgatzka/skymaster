@@ -1,5 +1,12 @@
 name: CI
 
+run-name: >
+  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
+
+concurrency:
+  group: pr-decorator-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
