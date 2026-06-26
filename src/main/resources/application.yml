@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: skymaster
+  main:
+    banner-mode: off
+logging:
+  level:
+    org.atmosphere: warn

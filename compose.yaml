@@ -1,0 +1,18 @@
+name: skymaster
+
+services:
+  mongodb:
+    image: 'mongo:latest'
+    environment:
+      - 'MONGO_INITDB_DATABASE=skymaster_dev'
+      - 'MONGO_INITDB_ROOT_PASSWORD=skymaster_dev'
+      - 'MONGO_INITDB_ROOT_USERNAME=skymaster_dev'
+    ports:
+      - '27017:27017'
+    volumes:
+      - 'mongodb_data:/data/db'
+      - 'mongodb_config:/data/configdb'
+
+volumes:
+  mongodb_data:
+  mongodb_config:
