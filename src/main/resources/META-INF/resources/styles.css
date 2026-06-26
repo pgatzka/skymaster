@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+html {
+    --lumo-line-height-m: 1.4;
+    --lumo-line-height-s: 1.2;
+    --lumo-line-height-xs: 1.1;
+    --lumo-border-radius: 80em;
+    --lumo-font-family: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+}
+
+[theme~="dark"] {
+    --lumo-base-color: #191a1c;
+    --lumo-success-text-color: #d1d3d9;
+    --lumo-success-color-50pct: #3d6a5080;
+    --lumo-success-color-10pct: #3d6a501a;
+    --lumo-success-color: #3d6a50;
+    --lumo-shade-5pct: #26282c0d;
+    --lumo-shade-10pct: #26282c1a;
+    --lumo-shade-20pct: #26282c33;
+    --lumo-shade-30pct: #26282c4d;
+    --lumo-shade-40pct: #26282c66;
+    --lumo-shade-50pct: #26282c80;
+    --lumo-shade-60pct: #26282c99;
+    --lumo-shade-70pct: #26282cb3;
+    --lumo-shade-80pct: #26282ccc;
+    --lumo-shade-90pct: #26282ce6;
+    --lumo-shade: #26282c;
+    --lumo-primary-text-color: #d1d3d9;
+    --lumo-primary-color-50pct: #2a438580;
+    --lumo-primary-color-10pct: #2a43851a;
+    --lumo-primary-color: #2a4371;
+    --lumo-tint-5pct: #d1d3d90d;
+    --lumo-tint-10pct: #d1d3d91a;
+    --lumo-tint-20pct: #d1d3d933;
+    --lumo-tint-30pct: #d1d3d94d;
+    --lumo-tint-40pct: #d1d3d966;
+    --lumo-tint-50pct: #d1d3d980;
+    --lumo-tint-60pct: #d1d3d999;
+    --lumo-tint-70pct: #d1d3d9b3;
+    --lumo-tint-80pct: #d1d3d9cc;
+    --lumo-tint-90pct: #d1d3d9e6;
+    --lumo-tint: #d1d3d9;
+    --lumo-primary-contrast-color: #d1d3d9;
+    --lumo-error-contrast-color: #d1d3d9;
+    --lumo-success-contrast-color: #d1d3d9;
+    --lumo-error-text-color: #d1d3d9;
+    --lumo-error-color-50pct: #db5c5c80;
+    --lumo-error-color-10pct: #db5c5c1a;
+    --lumo-error-color: #db5c5c;
+}
