@@ -5,7 +5,14 @@ run-name: >
 
 on:
   pull_request:
-    types: [ opened ]
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+concurrency:
+  group: pr-decorator-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 permissions:
   pull-requests: write
@@ -23,4 +30,8 @@ jobs:
         run: |
           BODY=$(gh api "repos/$REPO/pulls/$NUMBER/commits" --paginate \
             --jq '.[] | "* [" + .sha[0:7] + "] " + (.commit.author.date | fromdateiso8601 | strftime("%d.%m.%Y %H:%M")) + " " + (.commit.message | split("\n")[0])')
-          gh pr edit "$NUMBER" --repo "$REPO" --title "$BRANCH" --body "$BODY"
+          if [ "${{ github.event.action }}" = "opened" ]; then
+            gh pr edit "$NUMBER" --repo "$REPO" --title "$BRANCH" --body "$BODY"
+          else
+            gh pr edit "$NUMBER" --repo "$REPO" --body "$BODY"
+          fi
