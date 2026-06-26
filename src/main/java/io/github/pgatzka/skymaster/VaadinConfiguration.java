@@ -1,6 +1,5 @@
 package io.github.pgatzka.skymaster;
 
-
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.ColorScheme;
