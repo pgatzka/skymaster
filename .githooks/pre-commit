@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -u
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+if [[ "$BRANCH" == "main" ]]; then
+    echo "Direct commits to 'main' are not allowed. Use a feature branch." >&2
+    exit 1
+fi

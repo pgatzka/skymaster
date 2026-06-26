@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -uo pipefail
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Generate the set of valid branch names from issues, sorted by issue number
+if ! VALID_BRANCHES=$(gh issue list --state all --limit 1000 --json number,title \
+    --jq '.[] | "\(.number)-\(.title | ascii_downcase | gsub("[^a-z0-9]+";"-") | gsub("^-|-$";""))"' \
+    | sort -V); then
+    echo "Warning: couldn't fetch issues from GitHub; skipping branch check." >&2
+    exit 0
+fi
+
+if [[ -z "$VALID_BRANCHES" ]]; then
+    echo "Warning: no issues found; skipping branch check." >&2
+    exit 0
+fi
+
+if ! grep -qxF "$BRANCH" <<< "$VALID_BRANCHES"; then
+    echo "Branch '$BRANCH' doesn't match any issue." >&2
+    echo "Valid branch names:" >&2
+    echo "  ${VALID_BRANCHES//$'\n'/$'\n'  }" >&2
+    exit 1
+fi
