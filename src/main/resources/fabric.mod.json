@@ -1,6 +1,6 @@
 {
     "schemaVersion": 1,
-    "id": "modid",
+    "id": "skymaster",
     "version": "${version}",
     "name": "Skymaster",
     "description": "<todo>",
@@ -11,8 +11,8 @@
         "homepage": "https://fabricmc.net/",
         "sources": "https://github.com/pgatzka/skymaster"
     },
-    "license": "CC0-1.0",
-    "icon": "assets/modid/icon.png",
+    "license": "",
+    "icon": "assets/skymaster/icon.png",
     "environment": "*",
     "entrypoints": {
         "main": [

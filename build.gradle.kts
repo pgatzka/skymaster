@@ -3,7 +3,7 @@ plugins {
 }
 
 repositories {
-
+    maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
 
 loom {
@@ -14,11 +14,15 @@ loom {
             sourceSet(sourceSets["main"])
         }
     }
+
 }
+
 dependencies {
     minecraft(libs.minecraft)
     implementation(libs.fabric.loader)
     implementation(libs.fabric.api)
+    runtimeOnly(libs.httpclient)
+    runtimeOnly(libs.devauth)
 }
 
 tasks.processResources {
