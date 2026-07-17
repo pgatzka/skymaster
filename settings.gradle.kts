@@ -5,3 +5,5 @@ plugins {
 rootProject.name = "skymaster"
 
 include("skymaster-server")
+include("skymaster-api")
+include("skymaster-mod")
