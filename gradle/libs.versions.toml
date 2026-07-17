@@ -11,7 +11,7 @@ loom = { id = "net.fabricmc.fabric-loom", version = "1.17-SNAPSHOT" }
 spotless = { id = "com.diffplug.spotless", version = "8.8.0" }
 
 [libraries]
-springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "3.0.2" }
+springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "3.0.3" }
 spring-boot-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc" }
 spring-boot-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test" }
 spring-boot-devtools = { group = "org.springframework.boot", name = "spring-boot-devtools" }
