@@ -17,6 +17,7 @@ tasks.withType<JavaCompile> {
 spotless {
     java {
         palantirJavaFormat()
+        targetExclude("**/build/**")
     }
 }
 

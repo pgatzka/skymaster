@@ -101,6 +101,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - run-server-tests
+      - verify-formatting
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -118,6 +119,7 @@ jobs:
     needs:
       - run-mod-tests
       - run-server-tests
+      - verify-formatting
     steps:
       - name: Checkout
         uses: actions/checkout@v7
