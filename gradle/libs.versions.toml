@@ -17,7 +17,7 @@ spring-boot-webmvc-test = { group = "org.springframework.boot", name = "spring-b
 spring-boot-devtools = { group = "org.springframework.boot", name = "spring-boot-devtools" }
 junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
-jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = "2.21" }
+jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = "2.22" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
 jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
 jakarta-annotations = { group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.1.1" }
