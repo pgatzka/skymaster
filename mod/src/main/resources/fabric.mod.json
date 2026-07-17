@@ -17,6 +17,9 @@
     "entrypoints": {
         "main": [
             "io.github.pgatzka.skymaster.SkymasterMod"
+        ],
+        "client": [
+            "io.github.pgatzka.skymaster.SkymasterClientMod"
         ]
     },
     "mixins": [],

@@ -12,6 +12,7 @@ loom {
     mods {
         create("skymaster") {
             sourceSet(sourceSets["main"])
+            sourceSet(sourceSets["client"])
         }
     }
 
