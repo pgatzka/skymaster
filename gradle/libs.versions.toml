@@ -1,12 +1,21 @@
 [versions]
+jackson = "2.21.1"
 
 [plugins]
 lombok = { id = "io.freefair.lombok", version = "9.5.0" }
-spring-boot = { id = "org.springframework.boot", version = "4.1.0" }
+spring-boot = { id = "org.springframework.boot", version = "4.0.7" }
 spring-dependencies = { id = "io.spring.dependency-management", version = "1.1.7" }
+springdoc = { id = "org.springdoc.openapi-gradle-plugin", version = "1.9.0" }
+openapi = { id = "org.openapi.generator", version = "7.23.0" }
 
 [libraries]
+springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "3.0.2" }
 spring-boot-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc" }
 spring-boot-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test" }
 spring-boot-devtools = { group = "org.springframework.boot", name = "spring-boot-devtools" }
 junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
+jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
+jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = "2.21" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
+jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
+jakarta-annotations = { group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.1.1"}

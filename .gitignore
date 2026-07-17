@@ -1,3 +1,7 @@
 /.gradle/
+/build/
 /buildSrc/.gradle/
 /buildSrc/build/
+/skymaster-api/build
+/skymaster-mod/build
+/skymaster-server/build
