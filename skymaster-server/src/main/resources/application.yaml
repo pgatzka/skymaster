@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: skymaster
+  main:
+    banner-mode: off

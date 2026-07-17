@@ -1,5 +1,6 @@
 plugins {
     id("java-module")
+    alias(libs.plugins.lombok)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependencies)
 }
