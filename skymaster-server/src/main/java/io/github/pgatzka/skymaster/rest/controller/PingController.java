@@ -17,5 +17,4 @@ public class PingController implements PingEndpoint {
         log.info("Ping received");
         return ResponseEntity.ok(new PingResponse("Pong!"));
     }
-
 }

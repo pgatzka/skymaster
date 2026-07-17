@@ -9,5 +9,4 @@ public interface PingEndpoint {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<PingResponse> ping();
-
 }

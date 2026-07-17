@@ -1,12 +1,11 @@
 package io.github.pgatzka.skymaster;
 
+import static io.github.pgatzka.skymaster.SkyMasterMod.log;
+
 import net.fabricmc.api.ClientModInitializer;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
-import org.openapitools.client.Configuration;
 import org.openapitools.client.api.PingControllerApi;
-
-import static io.github.pgatzka.skymaster.SkyMasterMod.log;
 
 public class SkyMasterClientMod implements ClientModInitializer {
 
@@ -21,5 +20,4 @@ public class SkyMasterClientMod implements ClientModInitializer {
             throw new RuntimeException(e);
         }
     }
-
 }
