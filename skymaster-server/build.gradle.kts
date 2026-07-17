@@ -23,13 +23,18 @@ tasks {
     }
 }
 
+openApi {
+    outputDir.set(layout.buildDirectory.dir("openApi"))
+    outputFileName.set("spec.json")
+}
+
 val openApiSpec = configurations.create("openApiSpec") {
     isCanBeConsumed = true
     isCanBeResolved = false
 }
 
 artifacts {
-    add("openApiSpec", layout.buildDirectory.file("openapi.json")) {
+    add("openApiSpec", layout.buildDirectory.file("openApi/spec.json")) {
         builtBy(tasks.generateOpenApiDocs)
     }
 }

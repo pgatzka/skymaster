@@ -1,0 +1,32 @@
+{
+    "schemaVersion": 1,
+    "id": "skymaster",
+    "version": "${version}",
+    "name": "Skymaster",
+    "description": "<todo>",
+    "authors": [
+        "Philipp Gatzka"
+    ],
+    "contact": {
+        "homepage": "https://fabricmc.net/",
+        "sources": "https://github.com/pgatzka/skymaster"
+    },
+    "license": "",
+    "icon": "assets/skymaster/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "io.github.pgatzka.skymaster.SkyMasterMod"
+        ],
+        "client": [
+            "io.github.pgatzka.skymaster.SkyMasterClientMod"
+        ]
+    },
+    "mixins": [],
+    "depends": {
+        "fabricloader": ">=0.19.3",
+        "minecraft": "~26.1.2",
+        "java": ">=25",
+        "fabric-api": "*"
+    }
+}
