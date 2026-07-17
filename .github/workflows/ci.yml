@@ -1,5 +1,8 @@
 name: CI
 
+run-name: >
+  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
+
 on:
   push:
     branches:
@@ -7,6 +10,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   verify-formatting:
