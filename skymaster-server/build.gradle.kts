@@ -25,6 +25,13 @@ tasks {
     forkedSpringBootRun {
         dependsOn(compileAotJava, processAotResources, processAot)
     }
+    // Without this, build/libs holds both the boot jar and a `-plain` jar, and the
+    // Dockerfile's `COPY build/libs/*.jar application.jar` fails: Docker requires a
+    // directory destination when the source glob matches more than one file.
+    // Nothing consumes this module as a library, so the plain jar has no use.
+    jar {
+        enabled = false
+    }
 }
 
 openApi {

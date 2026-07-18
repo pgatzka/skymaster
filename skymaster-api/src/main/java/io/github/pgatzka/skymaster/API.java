@@ -21,8 +21,8 @@ public class API {
         this.pingApi = new PingControllerApi(apiClient);
     }
 
-    public void postScreenData(ScreenDataRequest request) throws ApiException {
-        screenApi.post(request);
+    public void pushScreenData(ScreenDataRequest request) throws ApiException {
+        screenApi.pushScreenData(request);
     }
 
     public PingResponse getPing() throws ApiException {

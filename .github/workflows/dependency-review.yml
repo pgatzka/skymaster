@@ -1,0 +1,26 @@
+name: Dependency Review
+
+run-name: >
+  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions: { }
+
+jobs:
+  review-dependencies:
+    name: Review Dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Review Dependencies
+        uses: actions/dependency-review-action@v5
+        with:
+          comment-summary-in-pr: on-failure

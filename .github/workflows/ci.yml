@@ -1,0 +1,125 @@
+name: CI
+
+run-name: >
+  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Escalated per job. Any permission left undeclared is set to `none`.
+permissions: { }
+
+jobs:
+  verify-formatting:
+    name: Verify Formatting
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Build
+        uses: ./.github/actions/setup-build
+
+      - name: Verify Formatting
+        run: ./gradlew spotlessCheck
+
+  build:
+    name: Build
+    needs: verify-formatting
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          # Sonar reads git blame to attribute issues to authors and to decide
+          # what counts as new code. A shallow clone silently degrades both.
+          fetch-depth: 0
+
+      - name: Setup Build
+        uses: ./.github/actions/setup-build
+
+      # Gradle owns the module ordering: :skymaster-server publishes the OpenAPI
+      # spec that :skymaster-api generates from, which :skymaster-mod depends on.
+      # Splitting that chain across jobs duplicates work rather than parallelising it.
+      #
+      # `sonar` must share this invocation with `build`. The Sonar plugin orders
+      # itself with mustRunAfter, not dependsOn, so `gradlew sonar` alone runs no
+      # tests and produces no JaCoCo report - it reports 0% coverage without error.
+      - name: Build and Analyse
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew build sonar -Dsonar.qualitygate.wait=true
+
+      - name: Upload Server Jar
+        uses: actions/upload-artifact@v7
+        with:
+          name: server-jar
+          path: skymaster-server/build/libs/*.jar
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Upload Mod Jar
+        uses: actions/upload-artifact@v7
+        with:
+          name: mod-jar
+          path: skymaster-mod/build/libs/*.jar
+          retention-days: 7
+          if-no-files-found: error
+
+  # Proves the Dockerfile still builds from the jar this run produced. Nothing is
+  # pushed here - the registry push happens only on release, from the same jar.
+  build-image:
+    name: Build Image
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # `path` is a single destination string, not a list. Passing a multi-line
+      # block here is what broke the previous pipeline (62fac8f).
+      - name: Download Server Jar
+        uses: actions/download-artifact@v8
+        with:
+          name: server-jar
+          path: skymaster-server/build/libs
+
+      - name: Setup Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build Image
+        uses: docker/build-push-action@v7
+        with:
+          context: skymaster-server
+          push: false
+
+  # The single required status check. Registering the individual jobs instead
+  # would break every time a job is added or renamed.
+  ci-gate:
+    name: CI Gate
+    needs: [ verify-formatting, build, build-image ]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      # `skipped` is deliberately tolerated - a job skipped by its own condition
+      # is legitimate. `cancelled` is not: without it a cancelled run reports green.
+      - name: Verify Dependencies Succeeded
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: |
+          echo "One or more jobs did not succeed:"
+          echo '${{ toJSON(needs) }}'
+          exit 1

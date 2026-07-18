@@ -9,6 +9,7 @@ import java.util.List;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.User;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.component.DataComponents;
@@ -18,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
+import org.openapitools.client.model.Collector;
 import org.openapitools.client.model.ItemStackData;
 import org.openapitools.client.model.ScreenDataRequest;
 
@@ -69,11 +71,19 @@ public class SkyMasterClientMod implements ClientModInitializer {
             }
             lastOpenScreen = screen;
 
+            User user = minecraft.getUser();
+
+            Collector collector = new Collector();
+            collector.setId(user.getProfileId().toString());
+            collector.setName(user.getName());
+
             String title = screen.getTitle().getString();
 
             ScreenDataRequest request = new ScreenDataRequest();
             request.setTitle(title);
             request.setCollectedAt(OffsetDateTime.now());
+            request.setCollector(collector);
+
             List<ItemStackData> itemStackData = parseMenuSlots(screen.getMenu());
             if (itemStackData == null) {
                 return;
@@ -81,13 +91,14 @@ public class SkyMasterClientMod implements ClientModInitializer {
             request.setItemStackDataList(itemStackData);
 
             requests.add(request);
+            log.info("Added screen {} to push queue", title);
         }
     }
 
     private LocalDateTime lastPush;
 
     private void pushScreenData() {
-        if (lastPush != null && LocalDateTime.now().isBefore(lastPush.plusMinutes(1))) {
+        if (lastPush != null && LocalDateTime.now().isBefore(lastPush.plusSeconds(1))) {
             log.debug("Skipping push, rate limit active (last push at {})", lastPush);
             return;
         }
@@ -99,7 +110,7 @@ public class SkyMasterClientMod implements ClientModInitializer {
         lastPush = LocalDateTime.now();
         try {
             log.info("Pushing screen data ({} request(s) remaining in queue)", requests.size() - 1);
-            api.postScreenData(requests.removeFirst());
+            api.pushScreenData(requests.removeFirst());
             log.info("Successfully pushed screen data");
         } catch (Exception e) {
             log.error("Could not push screen data to server", e);
