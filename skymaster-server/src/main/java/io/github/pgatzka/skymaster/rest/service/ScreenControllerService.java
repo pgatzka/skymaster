@@ -2,13 +2,12 @@ package io.github.pgatzka.skymaster.rest.service;
 
 import io.github.pgatzka.skymaster.rest.endpoint.ScreenEndpoint;
 import io.github.pgatzka.skymaster.rest.request.ScreenDataRequest;
+import java.io.File;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
-
-import java.io.File;
 
 @Slf4j
 @Service
@@ -28,5 +27,4 @@ public class ScreenControllerService implements ScreenEndpoint {
         log.info("Successfully written screen data to {}", file.getAbsolutePath());
         return ResponseEntity.ok().build();
     }
-
 }

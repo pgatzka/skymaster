@@ -21,5 +21,4 @@ public class ScreenController implements ScreenEndpoint {
     public ResponseEntity<Void> pushScreenData(ScreenDataRequest request) {
         return service.pushScreenData(request);
     }
-
 }
