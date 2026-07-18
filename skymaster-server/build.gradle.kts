@@ -38,3 +38,9 @@ artifacts {
         builtBy(tasks.generateOpenApiDocs)
     }
 }
+
+sonar {
+    properties {
+        property("sonar.projectKey", "io.github.pgatzka:skymaster-server")
+    }
+}

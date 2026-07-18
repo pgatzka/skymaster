@@ -50,4 +50,10 @@ tasks.jar {
     }
 }
 
+sonar {
+    properties {
+        property("sonar.projectKey", "io.github.pgatzka:skymaster-mod")
+    }
+}
+
 
