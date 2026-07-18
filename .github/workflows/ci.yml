@@ -16,6 +16,7 @@ jobs:
   verify-formatting:
     name: Verify Formatting
     runs-on: ubuntu-latest
+    environment: CI
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -30,6 +31,7 @@ jobs:
   verify-compilation:
     name: Verify Compilation
     runs-on: ubuntu-latest
+    environment: CI
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -44,6 +46,7 @@ jobs:
   run-server-tests:
     name: Run Server Tests
     runs-on: ubuntu-latest
+    environment: CI
     needs: verify-compilation
     steps:
       - name: Checkout
@@ -59,6 +62,7 @@ jobs:
   run-mod-tests:
     name: Run Server Tests
     runs-on: ubuntu-latest
+    environment: CI
     needs: verify-compilation
     steps:
       - name: Checkout
@@ -74,9 +78,11 @@ jobs:
   scan-sonar:
     name: Scan Sonar
     runs-on: ubuntu-latest
+    environment: CI
     needs:
       - run-mod-tests
       - run-server-tests
+      - verify-formatting
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -101,6 +107,7 @@ jobs:
   build-server:
     name: Build Server
     runs-on: ubuntu-latest
+    environment: CI
     needs:
       - run-server-tests
       - verify-formatting
@@ -118,6 +125,7 @@ jobs:
   build-mod:
     name: Build Mod
     runs-on: ubuntu-latest
+    environment: CI
     needs:
       - run-mod-tests
       - run-server-tests

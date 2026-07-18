@@ -3,3 +3,6 @@ spring:
     name: skymaster
   main:
     banner-mode: off
+  jackson:
+    serialization:
+      indent-output: true
