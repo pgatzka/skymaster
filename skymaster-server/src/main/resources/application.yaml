@@ -6,3 +6,8 @@ spring:
   jackson:
     serialization:
       indent-output: true
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

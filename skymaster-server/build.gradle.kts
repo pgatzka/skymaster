@@ -1,3 +1,5 @@
+import kotlin.random.Random
+
 plugins {
     id("java-module")
     alias(libs.plugins.lombok)
@@ -18,6 +20,10 @@ dependencies {
     testRuntimeOnly(libs.junit.launcher)
 }
 
+springBoot {
+    buildInfo()
+}
+
 tasks {
     withType<Test> {
         useJUnitPlatform()
@@ -34,9 +40,20 @@ tasks {
     }
 }
 
+val openApiGeneratePort = Random.nextInt(8080, 9090)
+
 openApi {
     outputDir.set(layout.buildDirectory.dir("openApi"))
     outputFileName.set("spec.json")
+    apiDocsUrl.set(apiDocsUrl.get().replace("8080", "$openApiGeneratePort"))
+    customBootRun {
+        args.set(listOf(
+            "--spring.docker.compose.file=${file("compose.yaml").absolutePath}",
+            "--server.port=$openApiGeneratePort",
+            "--springdoc.api-docs.enabled=true",
+            "--springdoc.swagger-ui.enabled=true"
+        ))
+    }
 }
 
 val openApiSpec = configurations.create("openApiSpec") {

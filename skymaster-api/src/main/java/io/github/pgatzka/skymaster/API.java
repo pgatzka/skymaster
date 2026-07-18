@@ -2,30 +2,24 @@ package io.github.pgatzka.skymaster;
 
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
-import org.openapitools.client.api.PingControllerApi;
-import org.openapitools.client.api.ScreenControllerApi;
-import org.openapitools.client.model.PingResponse;
-import org.openapitools.client.model.ScreenDataRequest;
+import org.openapitools.client.api.HandshakeControllerApi;
+import org.openapitools.client.model.HandshakeRequest;
 
 public class API {
 
-    private final ScreenControllerApi screenApi;
+    private final HandshakeControllerApi handshakeControllerApi;
 
-    private final PingControllerApi pingApi;
-
-    public API(String host) {
+    public API(String host, int port) {
         ApiClient apiClient = new ApiClient();
         apiClient.setHost(host);
+        apiClient.setPort(port);
 
-        this.screenApi = new ScreenControllerApi(apiClient);
-        this.pingApi = new PingControllerApi(apiClient);
+        this.handshakeControllerApi = new HandshakeControllerApi(apiClient);
     }
 
-    public void pushScreenData(ScreenDataRequest request) throws ApiException {
-        screenApi.pushScreenData(request);
+    public void handshake(HandshakeRequest request) throws ApiException {
+        handshakeControllerApi.handshake(request);
     }
 
-    public PingResponse getPing() throws ApiException {
-        return pingApi.ping();
-    }
+
 }
