@@ -1,6 +1,6 @@
 [versions]
 jackson = "2.21.1"
-spring-boot = "4.0.7"
+spring-boot = "4.1.0"
 
 [plugins]
 lombok = { id = "io.freefair.lombok", version = "9.5.0" }
