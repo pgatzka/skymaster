@@ -23,7 +23,7 @@ spotless {
 
 sonar {
     properties {
-        property("sonar.projectKey", "io.github.pgatzka:skymaster")
+        property("sonar.projectKey", "io.github.pgatzka:${project.name}")
         property("sonar.organization", "pgatzka")
     }
 }

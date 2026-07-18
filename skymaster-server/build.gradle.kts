@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.lombok)
     alias(libs.plugins.springdoc)
     alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.boot.aot)
     alias(libs.plugins.spring.dependencies)
 }
 
@@ -21,6 +22,9 @@ tasks {
     withType<Test> {
         useJUnitPlatform()
     }
+    forkedSpringBootRun {
+        dependsOn(compileAotJava, processAotResources, processAot)
+    }
 }
 
 openApi {
@@ -36,11 +40,5 @@ val openApiSpec = configurations.create("openApiSpec") {
 artifacts {
     add("openApiSpec", layout.buildDirectory.file("openApi/spec.json")) {
         builtBy(tasks.generateOpenApiDocs)
-    }
-}
-
-sonar {
-    properties {
-        property("sonar.projectKey", "io.github.pgatzka:skymaster-server")
     }
 }

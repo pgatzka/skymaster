@@ -35,25 +35,18 @@ dependencies {
     runtimeOnly(libs.devauth)
 }
 
-tasks.processResources {
-    inputs.property("version", project.version)
+tasks {
+    processResources {
+        inputs.property("version", project.version)
 
-    filesMatching("fabric.mod.json") {
-        expand("version" to project.version)
+        filesMatching("fabric.mod.json") {
+            expand("version" to project.version)
+        }
+    }
+    jar {
+        inputs.property("name", project.name)
+        from("LICENSE") {
+            rename { "${it}_${project.name}" }
+        }
     }
 }
-
-tasks.jar {
-    inputs.property("name", project.name)
-    from("LICENSE") {
-        rename { "${it}_${project.name}" }
-    }
-}
-
-sonar {
-    properties {
-        property("sonar.projectKey", "io.github.pgatzka:skymaster-mod")
-    }
-}
-
-

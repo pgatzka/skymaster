@@ -57,9 +57,3 @@ tasks.openApiGenerate {
 tasks.compileJava {
     dependsOn(openApiGenerate)
 }
-
-sonar {
-    properties {
-        property("sonar.projectKey", "io.github.pgatzka:skymaster-api")
-    }
-}
