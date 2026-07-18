@@ -28,6 +28,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-server:compileJava
   verify-server-formatting:
     runs-on: ubuntu-latest
     needs:
@@ -41,6 +42,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-server:spotlessCheck
   generate-openapi-spec:
     runs-on: ubuntu-latest
     needs:
@@ -54,6 +56,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-server:generateOpenApiDocs
   generate-openapi-sources:
     runs-on: ubuntu-latest
     needs:
@@ -67,6 +70,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-api:openApiGenerate
   verify-api-compile:
     runs-on: ubuntu-latest
     needs:
@@ -80,6 +84,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-mod:compileJava
   verify-api-formatting:
     runs-on: ubuntu-latest
     needs:
@@ -93,6 +98,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-api:spotlessCheck
   verify-mod-compile:
     runs-on: ubuntu-latest
     needs:
@@ -106,6 +112,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-mod:compileJava
   verify-mod-formatting:
     runs-on: ubuntu-latest
     needs:
@@ -119,6 +126,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-mod:spotlessCheck
   run-server-tests:
     runs-on: ubuntu-latest
     needs:
@@ -132,6 +140,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-server:test
   run-api-tests:
     runs-on: ubuntu-latest
     needs:
@@ -145,6 +154,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-api:test
   run-mod-tests:
     runs-on: ubuntu-latest
     needs:
@@ -158,6 +168,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-mod:test
   build-server:
     runs-on: ubuntu-latest
     needs:
@@ -171,6 +182,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-server:assemble
   build-api:
     runs-on: ubuntu-latest
     needs:
@@ -184,6 +196,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-api:assemble
   build-mod:
     runs-on: ubuntu-latest
     needs:
@@ -197,6 +210,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-mod:assemble
   sonar-scan-server:
     runs-on: ubuntu-latest
     needs:
@@ -210,6 +224,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-server:sonar
   sonar-scan-api:
     runs-on: ubuntu-latest
     needs:
@@ -223,6 +238,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-api:sonar
   sonar-scan-mod:
     runs-on: ubuntu-latest
     needs:
@@ -236,6 +252,7 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: 'gradle'
+      - run: ./gradlew :skymaster-mod:sonar
   package-server:
     runs-on: ubuntu-latest
     needs:
