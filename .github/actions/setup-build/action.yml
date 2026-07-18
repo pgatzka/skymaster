@@ -24,7 +24,7 @@ runs:
     # `basic` keeps caching on the MIT-licensed @actions/cache implementation
     # rather than the proprietary gradle-actions-caching component v6 defaults to.
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v6
+      uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
       with:
         cache-provider: basic
         cache-read-only: ${{ inputs.cache-read-only }}
