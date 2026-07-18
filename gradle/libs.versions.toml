@@ -22,7 +22,7 @@ jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", ve
 jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = "2.21" }
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
 jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
-jakarta-annotations = { group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.1.1" }
+jakarta-annotations = { group = "jakarta.annotation", name = "jakarta.annotation-api", version = "3.0.0" }
 
 devauth = { group = "me.djtheredstoner", name = "DevAuth-fabric", version = "1.2.1" }
 minecraft = { group = "com.mojang", name = "minecraft", version = "26.1.2" }
