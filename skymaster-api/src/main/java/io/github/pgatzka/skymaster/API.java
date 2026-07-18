@@ -20,6 +20,4 @@ public class API {
     public void handshake(HandshakeRequest request) throws ApiException {
         handshakeControllerApi.handshake(request);
     }
-
-
 }

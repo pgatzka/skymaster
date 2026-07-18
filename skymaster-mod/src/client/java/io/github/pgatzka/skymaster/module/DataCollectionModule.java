@@ -1,5 +1,8 @@
 package io.github.pgatzka.skymaster.module;
 
+import static io.github.pgatzka.skymaster.SkyMasterMod.MOD_ID;
+import static io.github.pgatzka.skymaster.SkyMasterMod.log;
+
 import io.github.pgatzka.skymaster.API;
 import io.github.pgatzka.skymaster.IModule;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -7,9 +10,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import org.openapitools.client.model.HandshakeRequest;
-
-import static io.github.pgatzka.skymaster.SkyMasterMod.MOD_ID;
-import static io.github.pgatzka.skymaster.SkyMasterMod.log;
 
 public class DataCollectionModule implements IModule {
 
@@ -34,7 +34,8 @@ public class DataCollectionModule implements IModule {
         User user = minecraft.getUser();
 
         try {
-            String version = FabricLoader.getInstance().getModContainer(MOD_ID)
+            String version = FabricLoader.getInstance()
+                    .getModContainer(MOD_ID)
                     .map(container -> container.getMetadata().getVersion().getFriendlyString())
                     .orElse("unknown");
 
@@ -50,5 +51,4 @@ public class DataCollectionModule implements IModule {
             log.error("Handshake failed", exception);
         }
     }
-
 }

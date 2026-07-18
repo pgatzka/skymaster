@@ -5,5 +5,4 @@ public interface IModule {
     default void onInitializeClient() {
         // empty by default
     }
-
 }

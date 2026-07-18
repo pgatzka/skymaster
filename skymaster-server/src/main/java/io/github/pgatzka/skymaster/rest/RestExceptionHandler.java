@@ -19,12 +19,13 @@ public class RestExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetail> handleException(Exception exception) {
         log.error("Caught unhandled exception", exception);
-        return ResponseEntity.of(ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR)).build();
+        return ResponseEntity.of(ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR))
+                .build();
     }
 
     @ExceptionHandler(VersionMismatchException.class)
     public ResponseEntity<ProblemDetail> handleVersionMismatchException(VersionMismatchException exception) {
-        return ResponseEntity.of(problem(HttpStatus.UPGRADE_REQUIRED, exception.getMessage())).build();
+        return ResponseEntity.of(problem(HttpStatus.UPGRADE_REQUIRED, exception.getMessage()))
+                .build();
     }
-
 }

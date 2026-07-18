@@ -1,10 +1,9 @@
 package io.github.pgatzka.skymaster;
 
 import io.github.pgatzka.skymaster.module.DataCollectionModule;
-import net.fabricmc.api.ClientModInitializer;
-
 import java.util.HashMap;
 import java.util.Map;
+import net.fabricmc.api.ClientModInitializer;
 
 public class SkyMasterClientMod implements ClientModInitializer {
 
@@ -16,7 +15,9 @@ public class SkyMasterClientMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        modules.entrySet().stream().sorted(Map.Entry.comparingByKey()).map(Map.Entry::getValue).forEach(IModule::onInitializeClient);
+        modules.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(Map.Entry::getValue)
+                .forEach(IModule::onInitializeClient);
     }
-
 }

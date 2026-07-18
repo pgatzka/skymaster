@@ -23,5 +23,4 @@ public class HandshakeController implements HandshakeEndpoint {
         log.info("Completed handshake with {} ({})", request.getUsername(), request.getUuid());
         return ResponseEntity.ok().build();
     }
-
 }

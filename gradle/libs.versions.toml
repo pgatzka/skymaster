@@ -17,6 +17,9 @@ springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-
 spring-boot-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc" }
 spring-boot-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test" }
 spring-boot-devtools = { group = "org.springframework.boot", name = "spring-boot-devtools" }
+spring-boot-docker-compose = { group = "org.springframework.boot", name = "spring-boot-docker-compose" }
+spring-boot-mongodb = { group = "org.springframework.boot", name = "spring-boot-starter-data-mongodb" }
+spring-boot-mongodb-test = { group = "org.springframework.boot", name = "spring-boot-starter-data-mongodb-test" }
 junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
 jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = "2.21" }

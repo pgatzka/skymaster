@@ -19,5 +19,4 @@ public class HandshakeService {
             throw new VersionMismatchException(request.getVersion(), buildProperties.getVersion());
         }
     }
-
 }

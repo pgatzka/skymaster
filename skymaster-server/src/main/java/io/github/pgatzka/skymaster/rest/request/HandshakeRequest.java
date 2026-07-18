@@ -19,5 +19,4 @@ public class HandshakeRequest {
     @NotEmpty
     @Pattern(regexp = "^\\d+\\.\\d+\\.\\d+(-SNAPSHOT)?")
     private String version;
-
 }

@@ -11,5 +11,4 @@ public interface HandshakeEndpoint {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> handshake(@RequestBody @Valid HandshakeRequest request);
-
 }
