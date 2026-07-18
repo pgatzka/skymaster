@@ -18,24 +18,13 @@ concurrency:
 permissions: { }
 
 jobs:
-  verify-formatting:
-    name: Verify Formatting
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Setup Build
-        uses: ./.github/actions/setup-build
-
-      - name: Verify Formatting
-        run: ./gradlew spotlessCheck
-
+  # There is deliberately no separate formatting job. `build` depends on `check`,
+  # which already runs spotlessCheck. A dedicated job measured 147s against build's
+  # 110s - Gradle configures every project regardless of the task requested, and
+  # Loom's Minecraft setup dominates that. Splitting it out reported formatting
+  # errors more slowly than not splitting it out.
   build:
     name: Build
-    needs: verify-formatting
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -115,7 +104,7 @@ jobs:
   # would break every time a job is added or renamed.
   ci-gate:
     name: CI Gate
-    needs: [ verify-formatting, build, build-image ]
+    needs: [ build, build-image ]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
