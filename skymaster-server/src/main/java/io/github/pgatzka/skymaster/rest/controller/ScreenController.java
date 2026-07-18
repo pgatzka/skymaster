@@ -17,5 +17,4 @@ public class ScreenController implements ScreenEndpoint {
         log.info(request.toString());
         return ResponseEntity.ok().build();
     }
-
 }

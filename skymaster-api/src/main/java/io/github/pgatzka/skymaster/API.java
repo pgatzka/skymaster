@@ -28,5 +28,4 @@ public class API {
     public PingResponse getPing() throws ApiException {
         return pingApi.ping();
     }
-
 }

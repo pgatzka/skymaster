@@ -1,5 +1,11 @@
 package io.github.pgatzka.skymaster;
 
+import static io.github.pgatzka.skymaster.SkyMasterMod.log;
+
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
@@ -10,15 +16,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.scores.DisplaySlot;
+import net.minecraft.world.scores.Objective;
 import org.openapitools.client.model.ItemStackData;
 import org.openapitools.client.model.ScreenDataRequest;
-
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static io.github.pgatzka.skymaster.SkyMasterMod.log;
 
 public class SkyMasterClientMod implements ClientModInitializer {
 
@@ -42,48 +43,64 @@ public class SkyMasterClientMod implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(this::onEndTick);
     }
 
+    private boolean isInSkyBlock(Minecraft minecraft) {
+        if (minecraft.level != null) {
+            Objective objective = minecraft.level.getScoreboard().getDisplayObjective(DisplaySlot.SIDEBAR);
+            if (objective != null) {
+                Component displayName = objective.getDisplayName();
+                return displayName.getString().trim().toLowerCase().startsWith("skyblock");
+            }
+        }
+        return false;
+    }
+
     private Screen lastOpenScreen = null;
 
     private void onEndTick(Minecraft minecraft) {
         pushScreenData();
 
-        if (!(minecraft.screen instanceof AbstractContainerScreen<?> screen)) {
-            return;
+        if (isInSkyBlock(minecraft)) {
+            if (!(minecraft.screen instanceof AbstractContainerScreen<?> screen)) {
+                return;
+            }
+
+            if (lastOpenScreen == screen) {
+                return;
+            }
+            lastOpenScreen = screen;
+
+            String title = screen.getTitle().getString();
+
+            ScreenDataRequest request = new ScreenDataRequest();
+            request.setTitle(title);
+            request.setCollectedAt(OffsetDateTime.now());
+            List<ItemStackData> itemStackData = parseMenuSlots(screen.getMenu());
+            if (itemStackData == null) {
+                return;
+            }
+            request.setItemStackDataList(itemStackData);
+
+            requests.add(request);
         }
-
-        if (lastOpenScreen == screen) {
-            return;
-        }
-        lastOpenScreen = screen;
-
-        String title = screen.getTitle().getString();
-
-        ScreenDataRequest request = new ScreenDataRequest();
-        request.setTitle(title);
-        request.setCollectedAt(OffsetDateTime.now());
-        List<ItemStackData> itemStackData = parseMenuSlots(screen.getMenu());
-        if (itemStackData == null) {
-            return;
-        }
-        request.setItemStackDataList(itemStackData);
-
-        requests.add(request);
     }
 
     private LocalDateTime lastPush;
 
     private void pushScreenData() {
         if (lastPush != null && LocalDateTime.now().isBefore(lastPush.plusMinutes(1))) {
+            log.debug("Skipping push, rate limit active (last push at {})", lastPush);
             return;
         }
-        lastPush = LocalDateTime.now();
-
         if (requests.isEmpty()) {
+            log.debug("Skipping push, no requests queued");
             return;
         }
 
+        lastPush = LocalDateTime.now();
         try {
+            log.info("Pushing screen data ({} request(s) remaining in queue)", requests.size() - 1);
             api.postScreenData(requests.removeFirst());
+            log.info("Successfully pushed screen data");
         } catch (Exception e) {
             log.error("Could not push screen data to server", e);
         }
@@ -121,6 +138,4 @@ public class SkyMasterClientMod implements ClientModInitializer {
 
         return data;
     }
-
-
 }

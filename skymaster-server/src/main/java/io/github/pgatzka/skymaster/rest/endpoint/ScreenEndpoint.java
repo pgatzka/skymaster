@@ -10,5 +10,4 @@ public interface ScreenEndpoint {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> post(@RequestBody ScreenDataRequest request);
-
 }

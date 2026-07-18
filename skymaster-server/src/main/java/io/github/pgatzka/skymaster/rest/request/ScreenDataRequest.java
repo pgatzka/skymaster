@@ -5,8 +5,5 @@ import java.util.List;
 
 public record ScreenDataRequest(String title, OffsetDateTime collectedAt, List<ItemStackData> itemStackDataList) {
 
-    public record ItemStackData(int slot, String displayName, String itemName, int itemCount, List<String> lines) {
-
-    }
-
+    public record ItemStackData(int slot, String displayName, String itemName, int itemCount, List<String> lines) {}
 }
