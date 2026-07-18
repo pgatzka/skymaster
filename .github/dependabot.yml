@@ -4,3 +4,10 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+
+  # Without this, action versions and any pinned SHAs are never updated.
+  # Pinning is only half the control - the other half is a bot that moves the pin.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
