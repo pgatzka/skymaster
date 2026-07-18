@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface ScreenEndpoint {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Void> post(@RequestBody ScreenDataRequest request);
+    ResponseEntity<Void> pushScreenData(@RequestBody ScreenDataRequest request);
 }
