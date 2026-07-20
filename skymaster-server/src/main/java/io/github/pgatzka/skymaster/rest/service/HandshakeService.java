@@ -15,8 +15,8 @@ public class HandshakeService {
     private final BuildProperties buildProperties;
 
     public void handshake(HandshakeRequest request) {
-        if (!request.getVersion().equals(buildProperties.getVersion())) {
-            throw new VersionMismatchException(request.getVersion(), buildProperties.getVersion());
+        if (!request.version().equals(buildProperties.getVersion())) {
+            throw new VersionMismatchException(request.version(), buildProperties.getVersion());
         }
     }
 }

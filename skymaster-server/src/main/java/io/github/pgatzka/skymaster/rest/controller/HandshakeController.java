@@ -20,7 +20,7 @@ public class HandshakeController implements HandshakeEndpoint {
     @Override
     public ResponseEntity<Void> handshake(HandshakeRequest request) {
         handshakeService.handshake(request);
-        log.info("Completed handshake with {} ({})", request.getUsername(), request.getUuid());
+        log.info("Completed handshake with {} ({})", request.username(), request.uuid());
         return ResponseEntity.ok().build();
     }
 }

@@ -27,6 +27,8 @@ jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-datab
 jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
 jakarta-annotations = { group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.1.1" }
 
+mockito = { group = "org.mockito", name = "mockito-core" }
+
 devauth = { group = "me.djtheredstoner", name = "DevAuth-fabric", version = "1.2.1" }
 minecraft = { group = "com.mojang", name = "minecraft", version = "26.1.2" }
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.19.3" }
