@@ -1,5 +1,6 @@
 [versions]
 jackson = "2.21.1"
+mockito = "5.20.0"
 spring-boot = "4.0.7"
 
 [plugins]
@@ -10,17 +11,12 @@ spring-dependencies = { id = "io.spring.dependency-management", version = "1.1.7
 springdoc = { id = "org.springdoc.openapi-gradle-plugin", version = "1.9.0" }
 openapi = { id = "org.openapi.generator", version = "7.23.0" }
 loom = { id = "net.fabricmc.fabric-loom", version = "1.17-SNAPSHOT" }
-spotless = { id = "com.diffplug.spotless", version = "8.8.0" }
-shadow = { id = "com.gradleup.shadow", version = "9.6.0" }
 
 [libraries]
 springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "3.0.2" }
 spring-boot-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc" }
 spring-boot-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test" }
 spring-boot-devtools = { group = "org.springframework.boot", name = "spring-boot-devtools" }
-spring-boot-docker-compose = { group = "org.springframework.boot", name = "spring-boot-docker-compose" }
-spring-boot-mongodb = { group = "org.springframework.boot", name = "spring-boot-starter-data-mongodb" }
-spring-boot-mongodb-test = { group = "org.springframework.boot", name = "spring-boot-starter-data-mongodb-test" }
 junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core", version.ref = "jackson" }
 jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = "2.21" }
@@ -28,7 +24,8 @@ jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-datab
 jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
 jakarta-annotations = { group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.1.1" }
 
-mockito = { group = "org.mockito", name = "mockito-core" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
 
 devauth = { group = "me.djtheredstoner", name = "DevAuth-fabric", version = "1.2.1" }
 minecraft = { group = "com.mojang", name = "minecraft", version = "26.1.2" }
@@ -37,3 +34,4 @@ fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version =
 httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version = "4.5.14" }
 moulconfig = { group = "org.notenoughupdates.moulconfig", name = "modern-26.1", version = "4.7.2" }
 fabric-kotlin = { group = "net.fabricmc", name = "fabric-language-kotlin", version = "1.13.12+kotlin.2.4.0" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version = "6.0.3" }

@@ -21,7 +21,7 @@ dependencies {
 
     testRuntimeOnly(libs.junit.launcher)
 
-    mockitoAgent(libs.mockito) { isTransitive = false}
+    mockitoAgent(libs.mockito.core) { isTransitive = false}
 }
 
 springBoot {
@@ -57,7 +57,8 @@ openApi {
             "--spring.docker.compose.file=${file("compose.yaml").absolutePath}",
             "--server.port=$openApiGeneratePort",
             "--springdoc.api-docs.enabled=true",
-            "--springdoc.swagger-ui.enabled=true"
+            "--springdoc.swagger-ui.enabled=true",
+            "--logging.level.root=warn"
         ))
     }
 }

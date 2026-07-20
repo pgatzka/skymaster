@@ -18,8 +18,6 @@ spotless {
     }
 }
 
-// Sonar does not measure coverage, it only imports it. Without a JaCoCo XML
-// report produced by this module's own test run, the project reports 0%.
 val jacocoXmlReport = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
 
 tasks {
@@ -66,6 +64,7 @@ tasks {
                 events("passed", "skipped", "failed")
             }
         }
+        useJUnitPlatform()
     }
     withType<JavaCompile> {
         options.release.set(25)

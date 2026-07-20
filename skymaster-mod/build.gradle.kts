@@ -1,6 +1,7 @@
 plugins {
     id("java-module")
     id("maven-publish")
+    alias(libs.plugins.lombok)
     alias(libs.plugins.loom)
 }
 
@@ -24,6 +25,8 @@ loom {
     }
 }
 
+val mockitoAgent = configurations.create("mockitoAgent")
+
 dependencies {
     minecraft(libs.minecraft)
 
@@ -42,6 +45,12 @@ dependencies {
 
     implementation(libs.fabric.kotlin)
     implementation(libs.moulconfig)
+
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.launcher)
+
+    mockitoAgent(libs.mockito.core) { isTransitive = false}
+    testImplementation(libs.mockito.junit)
 }
 
 publishing {
@@ -79,5 +88,8 @@ tasks {
         from("LICENSE") {
             rename { "${it}_${project.name}" }
         }
+    }
+    test {
+        jvmArgs("-javaagent:${mockitoAgent.asPath}", "-Xshare:off")
     }
 }

@@ -26,11 +26,18 @@ public class SkyMasterClientMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         setupConfig();
+        setupAPI(); // requires config
 
         modules.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .map(Map.Entry::getValue)
                 .forEach(IModule::onInitializeClient);
+    }
+
+    private void setupAPI() {
+        API.initialize(
+                getConfig().getDataCollection().getDataCollectionHost().getHost(),
+                getConfig().getDataCollection().getDataCollectionHost().getPort());
     }
 
     private void setupConfig() {
