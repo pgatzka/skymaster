@@ -1,6 +1,8 @@
 package io.github.pgatzka.skymaster.test;
 
-import io.github.pgatzka.skymaster.rest.request.HandshakeRequest;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -12,8 +14,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class RequestValidationTest<R> {
 
@@ -39,8 +39,11 @@ public abstract class RequestValidationTest<R> {
         factory.close();
     }
 
-    private boolean hasViolation(Set<ConstraintViolation<R>> violations, String field, Class<? extends Annotation> constraint) {
-        return violations.stream().anyMatch(violation -> violation.getPropertyPath().toString().equals(field) && violation.getConstraintDescriptor().getAnnotation().annotationType() == constraint);
+    private boolean hasViolation(
+            Set<ConstraintViolation<R>> violations, String field, Class<? extends Annotation> constraint) {
+        return violations.stream()
+                .anyMatch(violation -> violation.getPropertyPath().toString().equals(field)
+                        && violation.getConstraintDescriptor().getAnnotation().annotationType() == constraint);
     }
 
     @ParameterizedTest(name = "Field {2} with {1} value triggers {3}")
@@ -48,5 +51,4 @@ public abstract class RequestValidationTest<R> {
     void validationTests(R request, String description, String field, Class<? extends Annotation> constraint) {
         assertTrue(hasViolation(validator.validate(request), field, constraint));
     }
-
 }

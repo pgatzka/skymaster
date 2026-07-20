@@ -31,9 +31,9 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ProblemDetail> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ProblemDetail> handleMethodArgumentNotValidException(
+            MethodArgumentNotValidException exception) {
         return ResponseEntity.of(problem(HttpStatus.BAD_REQUEST, exception.getMessage()))
                 .build();
     }
-
 }

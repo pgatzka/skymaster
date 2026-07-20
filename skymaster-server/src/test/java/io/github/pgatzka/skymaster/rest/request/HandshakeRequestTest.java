@@ -32,7 +32,8 @@ class HandshakeRequestTest extends RequestValidationTest<HandshakeRequest> {
     }
 
     static Stream<Arguments> arguments() {
-        return Stream.of(Arguments.arguments(withUuid(""), "empty", "uuid", NotBlank.class),
+        return Stream.of(
+                Arguments.arguments(withUuid(""), "empty", "uuid", NotBlank.class),
                 Arguments.arguments(withUuid(null), "null", "uuid", NotBlank.class),
                 Arguments.arguments(withUuid(" "), "whitespace-only", "uuid", NotBlank.class),
                 Arguments.arguments(withUuid("hello-world"), "invalid uuid", "uuid", Pattern.class),
@@ -42,8 +43,6 @@ class HandshakeRequestTest extends RequestValidationTest<HandshakeRequest> {
                 Arguments.arguments(withVersion(""), "empty", "version", NotBlank.class),
                 Arguments.arguments(withVersion(null), "null", "version", NotBlank.class),
                 Arguments.arguments(withVersion(" "), "whitespace-only", "version", NotBlank.class),
-                Arguments.arguments(withVersion("hello-world"), "invalid version", "version", Pattern.class)
-        );
+                Arguments.arguments(withVersion("hello-world"), "invalid version", "version", Pattern.class));
     }
-
 }

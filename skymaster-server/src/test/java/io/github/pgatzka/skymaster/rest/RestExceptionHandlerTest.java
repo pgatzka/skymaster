@@ -1,5 +1,9 @@
 package io.github.pgatzka.skymaster.rest;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import io.github.pgatzka.skymaster.rest.exception.VersionMismatchException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,9 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class RestExceptionHandlerTest {
 
@@ -25,15 +26,13 @@ class RestExceptionHandlerTest {
         void throwVersionMismatch() {
             throw new VersionMismatchException("9.9.9", "1.0.0-SNAPSHOT");
         }
-
     }
 
     private MockMvc mockMvc;
 
     @BeforeEach
     void beforeEach() {
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(new ThrowingController())
+        mockMvc = MockMvcBuilders.standaloneSetup(new ThrowingController())
                 .setControllerAdvice(new RestExceptionHandler())
                 .build();
     }
@@ -47,8 +46,6 @@ class RestExceptionHandlerTest {
 
     @Test
     void handlesUnhandled() throws Exception {
-        mockMvc.perform(get("/throwUnhandled"))
-                .andExpect(status().isInternalServerError());
+        mockMvc.perform(get("/throwUnhandled")).andExpect(status().isInternalServerError());
     }
-
 }
