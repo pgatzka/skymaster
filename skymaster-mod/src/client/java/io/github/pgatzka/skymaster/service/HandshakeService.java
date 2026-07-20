@@ -18,8 +18,6 @@ public class HandshakeService {
 
     private static final int HTTP_UPGRADE_REQUIRED = 426;
 
-    private final API api;
-
     private final LongSupplier intervalSeconds;
 
     private final String modVersion;
@@ -34,14 +32,12 @@ public class HandshakeService {
 
     public static HandshakeService create() {
         return new HandshakeService(
-                API.getInstance(),
                 () -> SkyMasterClientMod.getConfig().getDataCollection().getHandshakeIntervalSeconds(),
                 resolveModVersion(),
                 Clock.systemUTC());
     }
 
-    HandshakeService(API api, LongSupplier intervalSeconds, String modVersion, Clock clock) {
-        this.api = api;
+    HandshakeService(LongSupplier intervalSeconds, String modVersion, Clock clock) {
         this.intervalSeconds = intervalSeconds;
         this.modVersion = modVersion;
         this.clock = clock;
@@ -62,7 +58,7 @@ public class HandshakeService {
 
     private boolean performHandshake(User user, Duration interval) {
         try {
-            api.handshake(buildRequest(user));
+            API.getInstance().handshake(buildRequest(user));
             return true;
         } catch (ApiException exception) {
             if (exception.getCode() == HTTP_UPGRADE_REQUIRED) {

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,9 +20,11 @@ import java.time.ZoneOffset;
 import java.util.UUID;
 import java.util.function.LongSupplier;
 import net.minecraft.client.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.model.HandshakeRequest;
 
@@ -32,7 +35,9 @@ class HandshakeServiceTest {
     private static final String MOD_VERSION = "1.2.3";
     private static final long INTERVAL_SECONDS = 60L;
 
+    private MockedStatic<API> apiStatic;
     private API api;
+
     private User user;
     private UUID profileId;
     private MutableClock clock;
@@ -41,7 +46,11 @@ class HandshakeServiceTest {
 
     @BeforeEach
     void setUp() {
+        // API is obtained via the static API.getInstance() inside the service,
+        // so that single static call is intercepted here.
+        apiStatic = mockStatic(API.class);
         api = mock(API.class);
+        apiStatic.when(API::getInstance).thenReturn(api);
 
         user = mock(User.class);
         profileId = UUID.randomUUID();
@@ -51,7 +60,14 @@ class HandshakeServiceTest {
         clock = new MutableClock(Instant.parse("2025-01-01T00:00:00Z"));
 
         LongSupplier interval = () -> INTERVAL_SECONDS;
-        service = new HandshakeService(api, interval, MOD_VERSION, clock);
+        service = new HandshakeService(interval, MOD_VERSION, clock);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (apiStatic != null) {
+            apiStatic.close();
+        }
     }
 
     @Test
