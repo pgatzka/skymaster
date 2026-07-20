@@ -5,6 +5,9 @@ import static io.github.pgatzka.skymaster.SkyMasterMod.log;
 
 import io.github.pgatzka.skymaster.API;
 import io.github.pgatzka.skymaster.IModule;
+import io.github.pgatzka.skymaster.SkyMasterClientMod;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
@@ -13,24 +16,43 @@ import org.openapitools.client.model.HandshakeRequest;
 
 public class DataCollectionModule implements IModule {
 
-    private final API api = new API("localhost", 8080);
-
-    private Boolean handshakeSuccessful;
+    private API api;
 
     public void onInitializeClient() {
+        api = new API(
+                SkyMasterClientMod.getConfig().dataCollection.dataCollectionHost.host,
+                SkyMasterClientMod.getConfig().dataCollection.dataCollectionHost.port);
         ClientTickEvents.END_CLIENT_TICK.register(this::onEndTick);
     }
 
+    private LocalDateTime lastHandshakeAt;
+
+    private Boolean lastHandshakeSuccessful;
+
     private void onEndTick(Minecraft minecraft) {
-        if (handshakeSuccessful == null) {
-            doHandshake(minecraft);
-        } else if (!handshakeSuccessful) {
+        if (!SkyMasterClientMod.getConfig().dataCollection.enabled) {
             return;
         }
+
+        // perform handshake every n seconds
+        if (lastHandshakeAt == null
+                || lastHandshakeAt.isBefore(LocalDateTime.now()
+                        .minus(Duration.ofSeconds(
+                                SkyMasterClientMod.getConfig().dataCollection.handshakeIntervalSeconds)))) {
+            doHandshake(minecraft);
+        }
+
+        if (!lastHandshakeSuccessful) {
+            return;
+        }
+
         // TODO: Collect data
     }
 
     private void doHandshake(Minecraft minecraft) {
+        // Set lastHandshakeAt always because we do not want to spam the server if the handshake failed
+        lastHandshakeAt = LocalDateTime.now();
+
         User user = minecraft.getUser();
 
         try {
@@ -45,10 +67,11 @@ public class DataCollectionModule implements IModule {
             request.setVersion(version);
 
             api.handshake(request);
-            handshakeSuccessful = true;
+            lastHandshakeSuccessful = true;
         } catch (Exception exception) {
-            handshakeSuccessful = false;
-            log.error("Handshake failed", exception);
+            lastHandshakeSuccessful = false;
+            log.error("Handshake failed: {}", exception.getMessage());
+            log.debug(exception.getMessage(), exception);
         }
     }
 }

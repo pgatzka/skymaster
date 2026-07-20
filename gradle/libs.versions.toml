@@ -11,6 +11,7 @@ springdoc = { id = "org.springdoc.openapi-gradle-plugin", version = "1.9.0" }
 openapi = { id = "org.openapi.generator", version = "7.23.0" }
 loom = { id = "net.fabricmc.fabric-loom", version = "1.17-SNAPSHOT" }
 spotless = { id = "com.diffplug.spotless", version = "8.8.0" }
+shadow = { id = "com.gradleup.shadow", version = "9.6.0" }
 
 [libraries]
 springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "3.0.2" }
@@ -33,4 +34,6 @@ devauth = { group = "me.djtheredstoner", name = "DevAuth-fabric", version = "1.2
 minecraft = { group = "com.mojang", name = "minecraft", version = "26.1.2" }
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.19.3" }
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.154.2+26.1.2" }
-httpclient = { module = "org.apache.httpcomponents:httpclient", version = "4.5.14" }
+httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version = "4.5.14" }
+moulconfig = { group = "org.notenoughupdates.moulconfig", name = "modern-26.1", version = "4.7.2" }
+fabric-kotlin = { group = "net.fabricmc", name = "fabric-language-kotlin", version = "1.13.12+kotlin.2.4.0" }

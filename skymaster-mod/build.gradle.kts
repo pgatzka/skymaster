@@ -10,8 +10,8 @@ java {
 
 repositories {
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
+    maven("https://maven.notenoughupdates.org/releases/")
 }
-
 
 loom {
     splitEnvironmentSourceSets()
@@ -22,7 +22,6 @@ loom {
             sourceSet(sourceSets["client"])
         }
     }
-
 }
 
 dependencies {
@@ -40,6 +39,9 @@ dependencies {
 
     runtimeOnly(libs.httpclient)
     localRuntime(libs.devauth)
+
+    implementation(libs.fabric.kotlin)
+    implementation(libs.moulconfig)
 }
 
 publishing {
