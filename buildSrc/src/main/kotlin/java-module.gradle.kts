@@ -13,6 +13,11 @@ java {
 
 spotless {
     java {
+        // Target the checked-in sources directly rather than letting Spotless derive
+        // them from the source sets. :skymaster-mod's main source set includes the
+        // OpenAPI-generated directory, so a source-set-derived target makes
+        // spotlessCheck depend on codegen - which boots the Spring app to produce the
+        // spec. That turned a formatting check into a 2.5 minute job.
         target("src/**/*.java")
         palantirJavaFormat()
     }

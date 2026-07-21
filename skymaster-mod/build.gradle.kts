@@ -23,8 +23,6 @@ val openApiSpec = configurations.create("openApiSpec") {
     isCanBeResolved = true
 }
 
-val openApiSpecPath = openApiSpec.incoming.files.elements.map { it.single().asFile.absolutePath }
-
 java {
     withSourcesJar()
 }
@@ -34,16 +32,20 @@ repositories {
     maven("https://maven.notenoughupdates.org/releases/")
 }
 
-
 loom {
     splitEnvironmentSourceSets()
-
     mods {
         create("skymaster") {
             sourceSet(sourceSets["main"])
             sourceSet(sourceSets["client"])
         }
     }
+}
+
+val shipped = configurations.create("shipped")
+
+configurations {
+    implementation.get().extendsFrom(shipped)
 }
 
 val mockitoAgent = configurations.create("mockitoAgent")
@@ -53,11 +55,14 @@ dependencies {
 
     implementation(libs.fabric.loader)
     implementation(libs.fabric.api)
-    implementation(libs.jackson.core)
-    implementation(libs.jackson.annotations)
-    implementation(libs.jackson.databind)
-    implementation(libs.jackson.jsr310)
-    implementation(libs.jakarta.annotations)
+
+    shipped(platform(libs.jackson.bom))
+
+    shipped(libs.jackson.core)
+    shipped(libs.jackson.annotations)
+    shipped(libs.jackson.databind)
+    shipped(libs.jackson.jsr310)
+    shipped(libs.jakarta.annotations)
 
     runtimeOnly(libs.httpclient)
 
@@ -73,6 +78,12 @@ dependencies {
 
     mockitoAgent(libs.mockito.core) { isTransitive = false}
     testImplementation(libs.mockito.junit)
+}
+
+afterEvaluate {
+    shipped.resolvedConfiguration.resolvedArtifacts.forEach { art ->
+        dependencies.add("include", art.moduleVersion.id.toString())
+    }
 }
 
 publishing {
@@ -140,4 +151,3 @@ tasks {
         dependsOn(openApiGenerate)
     }
 }
-
