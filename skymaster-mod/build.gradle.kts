@@ -50,10 +50,10 @@ dependencies {
     minecraft(libs.minecraft)
 
     implementation(libs.fabric.loader)
+    implementation(libs.fabric.api)
 
     shipped(platform(libs.jackson.bom))
 
-    shipped(libs.fabric.api)
     shipped(libs.jackson.core)
     shipped(libs.jackson.annotations)
     shipped(libs.jackson.databind)
