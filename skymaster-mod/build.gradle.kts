@@ -1,9 +1,29 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     id("java-module")
     id("maven-publish")
     alias(libs.plugins.lombok)
     alias(libs.plugins.loom)
+    alias(libs.plugins.openapi)
 }
+
+val openApiGenerate = tasks.named<GenerateTask>("openApiGenerate")
+
+sourceSets {
+    main {
+        java {
+            srcDir(openApiGenerate.map { "${it.outputDir.get()}/src/main/java" })
+        }
+    }
+}
+
+val openApiSpec = configurations.create("openApiSpec") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+
+val openApiSpecPath = openApiSpec.incoming.files.elements.map { it.single().asFile.absolutePath }
 
 java {
     withSourcesJar()
@@ -13,6 +33,7 @@ repositories {
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
     maven("https://maven.notenoughupdates.org/releases/")
 }
+
 
 loom {
     splitEnvironmentSourceSets()
@@ -32,16 +53,17 @@ dependencies {
 
     implementation(libs.fabric.loader)
     implementation(libs.fabric.api)
-
-    // Both are required and do different jobs: `implementation` puts the API on the
-    // compile classpath, `include` nests it in the mod jar (Fabric jar-in-jar) so it
-    // resolves at runtime. `include` alone fails to compile; `implementation` alone
-    // produces a mod that throws NoClassDefFoundError in game.
-    implementation(project(":skymaster-api"))
-    include(project(":skymaster-api"))
+    implementation(libs.jackson.core)
+    implementation(libs.jackson.annotations)
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.jsr310)
+    implementation(libs.jakarta.annotations)
 
     runtimeOnly(libs.httpclient)
+
     localRuntime(libs.devauth)
+
+    openApiSpec(project(mapOf("path" to ":skymaster-server", "configuration" to "openApiSpec")))
 
     implementation(libs.fabric.kotlin)
     implementation(libs.moulconfig)
@@ -92,4 +114,30 @@ tasks {
     test {
         jvmArgs("-javaagent:${mockitoAgent.asPath}", "-Xshare:off")
     }
+    openApiValidate.configure {
+        inputSpec.set(layout.file(providers.provider { openApiSpec.incoming.files.singleFile }))
+        dependsOn(openApiSpec)
+    }
+    openApiGenerate.configure {
+        inputSpec.set(layout.file(providers.provider { openApiSpec.incoming.files.singleFile }))
+        dependsOn(openApiSpec)
+        generatorName.set("java")
+
+        generateApiTests.set(false)
+        generateModelTests.set(false)
+        generateApiDocumentation.set(false)
+        generateModelDocumentation.set(false)
+        library.set("native")
+
+        configOptions.set(
+            mapOf(
+                "useJakartaEe" to "true",
+                "openApiNullable" to "false"
+            )
+        )
+    }
+    compileJava {
+        dependsOn(openApiGenerate)
+    }
 }
+
