@@ -29,7 +29,9 @@ public class SkyMasterConfig extends Config {
 
         @Expose
         @Accordion
-        @ConfigOption(name = "Data Collection server", desc = "Options for the data collection server")
+        @ConfigOption(
+                name = "Data Collection server",
+                desc = "Options for the data collection server, changing those options requires a restart of the game")
         public DataCollectionHostCategory dataCollectionHost = new DataCollectionHostCategory();
 
         @Expose

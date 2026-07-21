@@ -1,4 +1,4 @@
-package io.github.pgatzka.skymaster;
+package io.github.pgatzka.skymaster.api;
 
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;

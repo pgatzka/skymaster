@@ -2,13 +2,15 @@ package io.github.pgatzka.skymaster.rest.request;
 
 import io.github.pgatzka.skymaster.test.RequestValidationTest;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.provider.Arguments;
 
 class HandshakeRequestTest extends RequestValidationTest<HandshakeRequest> {
 
-    private static final String VALID_UUID = "d8cb5ee8-6607-4e26-8b2a-0f9e7c201a4e";
+    private static final UUID VALID_UUID = UUID.fromString("d8cb5ee8-6607-4e26-8b2a-0f9e7c201a4e");
 
     private static final String VALID_USERNAME = "InternalError_";
 
@@ -19,7 +21,7 @@ class HandshakeRequestTest extends RequestValidationTest<HandshakeRequest> {
         return new HandshakeRequest(VALID_UUID, VALID_USERNAME, VALID_VERSION);
     }
 
-    private static HandshakeRequest withUuid(String uuid) {
+    private static HandshakeRequest withUuid(UUID uuid) {
         return new HandshakeRequest(uuid, VALID_USERNAME, VALID_VERSION);
     }
 
@@ -33,10 +35,7 @@ class HandshakeRequestTest extends RequestValidationTest<HandshakeRequest> {
 
     static Stream<Arguments> arguments() {
         return Stream.of(
-                Arguments.arguments(withUuid(""), "empty", "uuid", NotBlank.class),
-                Arguments.arguments(withUuid(null), "null", "uuid", NotBlank.class),
-                Arguments.arguments(withUuid(" "), "whitespace-only", "uuid", NotBlank.class),
-                Arguments.arguments(withUuid("hello-world"), "invalid uuid", "uuid", Pattern.class),
+                Arguments.arguments(withUuid(null), "null", "uuid", NotNull.class),
                 Arguments.arguments(withUsername(""), "empty", "username", NotBlank.class),
                 Arguments.arguments(withUsername(null), "null", "username", NotBlank.class),
                 Arguments.arguments(withUsername(" "), "whitespace-only", "username", NotBlank.class),

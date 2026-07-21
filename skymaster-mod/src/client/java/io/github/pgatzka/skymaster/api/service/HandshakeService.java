@@ -1,22 +1,25 @@
-package io.github.pgatzka.skymaster.service;
+package io.github.pgatzka.skymaster.api.service;
 
 import static io.github.pgatzka.skymaster.SkyMasterMod.MOD_ID;
 import static io.github.pgatzka.skymaster.SkyMasterMod.log;
 
-import io.github.pgatzka.skymaster.API;
 import io.github.pgatzka.skymaster.SkyMasterClientMod;
+import io.github.pgatzka.skymaster.api.API;
+import io.github.pgatzka.skymaster.api.client.HandshakeClient;
+import io.github.pgatzka.skymaster.api.pojo.HandshakeIdentity;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.function.LongSupplier;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.User;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.model.HandshakeRequest;
 
 public class HandshakeService {
 
     private static final int HTTP_UPGRADE_REQUIRED = 426;
+
+    private final HandshakeClient handshakeClient;
 
     private final LongSupplier intervalSeconds;
 
@@ -32,18 +35,20 @@ public class HandshakeService {
 
     public static HandshakeService create() {
         return new HandshakeService(
+                request -> API.getInstance().handshake(request),
                 () -> SkyMasterClientMod.getConfig().getDataCollection().getHandshakeIntervalSeconds(),
                 resolveModVersion(),
                 Clock.systemUTC());
     }
 
-    HandshakeService(LongSupplier intervalSeconds, String modVersion, Clock clock) {
+    HandshakeService(HandshakeClient handshakeClient, LongSupplier intervalSeconds, String modVersion, Clock clock) {
+        this.handshakeClient = handshakeClient;
         this.intervalSeconds = intervalSeconds;
         this.modVersion = modVersion;
         this.clock = clock;
     }
 
-    public boolean isConnected(User user) {
+    public boolean isConnected(HandshakeIdentity identity) {
         if (handshakesDisabled) {
             return false;
         }
@@ -52,13 +57,13 @@ public class HandshakeService {
             return lastHandshakeSuccessful;
         }
         lastHandshakeAt = clock.instant();
-        lastHandshakeSuccessful = performHandshake(user, interval);
+        lastHandshakeSuccessful = performHandshake(identity, interval);
         return lastHandshakeSuccessful;
     }
 
-    private boolean performHandshake(User user, Duration interval) {
+    private boolean performHandshake(HandshakeIdentity identity, Duration interval) {
         try {
-            API.getInstance().handshake(buildRequest(user));
+            handshakeClient.handshake(buildRequest(identity));
             return true;
         } catch (ApiException exception) {
             if (exception.getCode() == HTTP_UPGRADE_REQUIRED) {
@@ -75,10 +80,10 @@ public class HandshakeService {
         }
     }
 
-    private HandshakeRequest buildRequest(User user) {
+    private HandshakeRequest buildRequest(HandshakeIdentity identity) {
         HandshakeRequest request = new HandshakeRequest();
-        request.setUsername(user.getName());
-        request.setUuid(user.getProfileId().toString());
+        request.setUsername(identity.username());
+        request.setUuid(identity.uuid());
         request.setVersion(modVersion);
         return request;
     }

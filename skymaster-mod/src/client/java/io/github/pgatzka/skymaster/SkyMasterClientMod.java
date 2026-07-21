@@ -2,6 +2,7 @@ package io.github.pgatzka.skymaster;
 
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.managed.ManagedConfig;
+import io.github.pgatzka.skymaster.api.API;
 import io.github.pgatzka.skymaster.config.SkyMasterConfig;
 import io.github.pgatzka.skymaster.module.DataCollectionModule;
 import java.io.File;

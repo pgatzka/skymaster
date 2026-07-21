@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import io.github.pgatzka.skymaster.rest.request.HandshakeRequest;
 import io.github.pgatzka.skymaster.rest.service.HandshakeService;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -23,7 +24,7 @@ import tools.jackson.databind.ObjectMapper;
 @WebMvcTest(HandshakeController.class)
 class HandshakeControllerTest {
 
-    private static final String VALID_UUID = "d8cb5ee8-6607-4e26-8b2a-0f9e7c201a4e";
+    private static final UUID VALID_UUID = UUID.fromString("d8cb5ee8-6607-4e26-8b2a-0f9e7c201a4e");
 
     private static final String VALID_USERNAME = "InternalError_";
 
@@ -56,9 +57,12 @@ class HandshakeControllerTest {
 
     @Test
     void returns400AndSkipsServiceWhenBodyIsInvalid() throws Exception {
+        HandshakeRequest request = new HandshakeRequest(VALID_UUID, VALID_USERNAME, VALID_VERSION);
+        String json = objectMapper.writeValueAsString(request);
+        json = json.replace(VALID_UUID.toString(), "invalid-uuid");
         mockMvc.perform(post("/handshake")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
+                        .content(json))
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(handshakeService);

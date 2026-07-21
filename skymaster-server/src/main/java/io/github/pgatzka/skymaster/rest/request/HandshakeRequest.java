@@ -1,11 +1,12 @@
 package io.github.pgatzka.skymaster.rest.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.util.UUID;
 
 public record HandshakeRequest(
-        @NotBlank @Pattern(regexp = "^\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}$")
-        String uuid,
+        @NotNull UUID uuid,
 
         @NotBlank String username,
 
