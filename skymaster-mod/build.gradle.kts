@@ -71,7 +71,7 @@ dependencies {
     openApiSpec(project(mapOf("path" to ":skymaster-server", "configuration" to "openApiSpec")))
 
     implementation(libs.fabric.kotlin)
-    implementation(libs.moulconfig)
+    shipped(libs.moulconfig)
 
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.launcher)
