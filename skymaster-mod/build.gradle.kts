@@ -1,7 +1,25 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     id("java-module")
     id("maven-publish")
     alias(libs.plugins.loom)
+    alias(libs.plugins.openapi)
+}
+
+val openApiGenerate = tasks.named<GenerateTask>("openApiGenerate")
+
+sourceSets {
+    main {
+        java {
+            srcDir(openApiGenerate.map { "${it.outputDir.get()}/src/main/java" })
+        }
+    }
+}
+
+val openApiSpec = configurations.create("openApiSpec") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
 }
 
 java {
@@ -12,17 +30,20 @@ repositories {
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
 }
 
-
 loom {
     splitEnvironmentSourceSets()
-
     mods {
         create("skymaster") {
             sourceSet(sourceSets["main"])
             sourceSet(sourceSets["client"])
         }
     }
+}
 
+val shipped = configurations.create("shipped")
+
+configurations {
+    implementation.get().extendsFrom(shipped)
 }
 
 dependencies {
@@ -31,15 +52,25 @@ dependencies {
     implementation(libs.fabric.loader)
     implementation(libs.fabric.api)
 
-    // Both are required and do different jobs: `implementation` puts the API on the
-    // compile classpath, `include` nests it in the mod jar (Fabric jar-in-jar) so it
-    // resolves at runtime. `include` alone fails to compile; `implementation` alone
-    // produces a mod that throws NoClassDefFoundError in game.
-    implementation(project(":skymaster-api"))
-    include(project(":skymaster-api"))
+    shipped(platform(libs.jackson.bom))
+
+    shipped(libs.jackson.core)
+    shipped(libs.jackson.annotations)
+    shipped(libs.jackson.databind)
+    shipped(libs.jackson.jsr310)
+    shipped(libs.jakarta.annotations)
 
     runtimeOnly(libs.httpclient)
+
     localRuntime(libs.devauth)
+
+    openApiSpec(project(mapOf("path" to ":skymaster-server", "configuration" to "openApiSpec")))
+}
+
+afterEvaluate {
+    shipped.resolvedConfiguration.resolvedArtifacts.forEach { art ->
+        dependencies.add("include", art.moduleVersion.id.toString())
+    }
 }
 
 publishing {
@@ -77,5 +108,30 @@ tasks {
         from("LICENSE") {
             rename { "${it}_${project.name}" }
         }
+    }
+    openApiValidate.configure {
+        inputSpec.set(layout.file(providers.provider { openApiSpec.incoming.files.singleFile }))
+        dependsOn(openApiSpec)
+    }
+    openApiGenerate.configure {
+        inputSpec.set(layout.file(providers.provider { openApiSpec.incoming.files.singleFile }))
+        dependsOn(openApiSpec)
+        generatorName.set("java")
+
+        generateApiTests.set(false)
+        generateModelTests.set(false)
+        generateApiDocumentation.set(false)
+        generateModelDocumentation.set(false)
+        library.set("native")
+
+        configOptions.set(
+            mapOf(
+                "useJakartaEe" to "true",
+                "openApiNullable" to "false"
+            )
+        )
+    }
+    compileJava {
+        dependsOn(openApiGenerate)
     }
 }

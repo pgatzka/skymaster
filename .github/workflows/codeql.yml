@@ -32,8 +32,6 @@ jobs:
         uses: ./.github/actions/setup-build
 
       # build-mode: manual rather than autobuild. Autobuild is de-emphasised in v4
-      # and cannot be trusted with this build: :skymaster-api's sources do not exist
-      # until the OpenAPI generator has run, which needs the server's spec first.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
         with:

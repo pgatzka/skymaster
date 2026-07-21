@@ -40,7 +40,7 @@ jobs:
         uses: ./.github/actions/setup-build
 
       # Gradle owns the module ordering: :skymaster-server publishes the OpenAPI
-      # spec that :skymaster-api generates from, which :skymaster-mod depends on.
+      # spec that :skymaster-mod generates the api code from.
       # Splitting that chain across jobs duplicates work rather than parallelising it.
       #
       # `sonar` must share this invocation with `build`. The Sonar plugin orders
