@@ -159,20 +159,8 @@ tasks {
                 exclude("**/generated/**")
             }
         )
-        // so the HTML report can render client source lines
         sourceDirectories.from(files(sourceSets["client"].allSource.srcDirs))
     }
-    jacocoTestCoverageVerification {
-        classDirectories.from(
-            files(sourceSets["client"].output).asFileTree.matching {
-                exclude("**/generated/**")
-            }
-        )
-    }
-    // TODO: Disabled to pass CI, enable once coverage is high enough
-    // check {
-    //     dependsOn(jacocoTestCoverageVerification)
-    // }
     openApiValidate.configure {
         inputSpec.set(layout.file(providers.provider { openApiSpec.incoming.files.singleFile }))
         dependsOn(openApiSpec)

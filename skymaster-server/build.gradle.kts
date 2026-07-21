@@ -47,6 +47,37 @@ tasks {
     check {
         dependsOn(jacocoTestCoverageVerification)
     }
+    jacocoTestCoverageVerification {
+        classDirectories.setFrom(files(classDirectories.files.map {
+            fileTree(it) {
+                exclude("**/generated/**")
+            }
+        }))
+        violationRules {
+            rule {
+                limit {
+                    counter = "LINE"
+                    value = "COVEREDRATIO"
+                    minimum = BigDecimal.valueOf(0.8)
+                }
+            }
+            rule {
+                limit {
+                    counter = "BRANCH"
+                    value = "COVEREDRATIO"
+                    minimum = "0.70".toBigDecimal()
+                }
+            }
+            rule {
+                element = "CLASS"
+                limit {
+                    counter = "LINE"
+                    value = "COVEREDRATIO"
+                    minimum = "0.50".toBigDecimal()
+                }
+            }
+        }
+    }
 }
 
 val openApiGeneratePort = Random.nextInt(8080, 9090)
