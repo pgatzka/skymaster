@@ -22,8 +22,6 @@ val openApiSpec = configurations.create("openApiSpec") {
     isCanBeResolved = true
 }
 
-val openApiSpecPath = openApiSpec.incoming.files.elements.map { it.single().asFile.absolutePath }
-
 java {
     withSourcesJar()
 }
@@ -42,22 +40,37 @@ loom {
     }
 }
 
+val shipped = configurations.create("shipped")
+
+configurations {
+    implementation.get().extendsFrom(shipped)
+}
+
 dependencies {
     minecraft(libs.minecraft)
 
     implementation(libs.fabric.loader)
-    implementation(libs.fabric.api)
-    implementation(libs.jackson.core)
-    implementation(libs.jackson.annotations)
-    implementation(libs.jackson.databind)
-    implementation(libs.jackson.jsr310)
-    implementation(libs.jakarta.annotations)
+
+    shipped(platform(libs.jackson.bom))
+
+    shipped(libs.fabric.api)
+    shipped(libs.jackson.core)
+    shipped(libs.jackson.annotations)
+    shipped(libs.jackson.databind)
+    shipped(libs.jackson.jsr310)
+    shipped(libs.jakarta.annotations)
 
     runtimeOnly(libs.httpclient)
 
     localRuntime(libs.devauth)
 
     openApiSpec(project(mapOf("path" to ":skymaster-server", "configuration" to "openApiSpec")))
+}
+
+afterEvaluate {
+    shipped.resolvedConfiguration.resolvedArtifacts.forEach { art ->
+        dependencies.add("include", art.moduleVersion.id.toString())
+    }
 }
 
 publishing {
@@ -122,4 +135,3 @@ tasks {
         dependsOn(openApiGenerate)
     }
 }
-
