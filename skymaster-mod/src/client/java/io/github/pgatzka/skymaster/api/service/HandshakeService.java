@@ -7,13 +7,13 @@ import io.github.pgatzka.skymaster.SkyMasterClientMod;
 import io.github.pgatzka.skymaster.api.API;
 import io.github.pgatzka.skymaster.api.client.HandshakeClient;
 import io.github.pgatzka.skymaster.api.pojo.HandshakeIdentity;
+import io.github.pgatzka.skymaster.generated.openapi.ApiException;
+import io.github.pgatzka.skymaster.generated.openapi.model.HandshakeRequest;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.function.LongSupplier;
 import net.fabricmc.loader.api.FabricLoader;
-import org.openapitools.client.ApiException;
-import org.openapitools.client.model.HandshakeRequest;
 
 public class HandshakeService {
 

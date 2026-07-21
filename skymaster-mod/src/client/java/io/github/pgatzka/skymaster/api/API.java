@@ -1,9 +1,9 @@
 package io.github.pgatzka.skymaster.api;
 
-import org.openapitools.client.ApiClient;
-import org.openapitools.client.ApiException;
-import org.openapitools.client.api.HandshakeControllerApi;
-import org.openapitools.client.model.HandshakeRequest;
+import io.github.pgatzka.skymaster.generated.openapi.ApiClient;
+import io.github.pgatzka.skymaster.generated.openapi.ApiException;
+import io.github.pgatzka.skymaster.generated.openapi.api.HandshakeControllerApi;
+import io.github.pgatzka.skymaster.generated.openapi.model.HandshakeRequest;
 
 public class API {
 

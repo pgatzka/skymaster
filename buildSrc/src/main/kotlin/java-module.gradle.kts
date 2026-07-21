@@ -32,8 +32,18 @@ tasks {
             xml.required = true
             html.required = true
         }
+        classDirectories.setFrom(files(classDirectories.files.map {
+            fileTree(it) {
+                exclude("**/generated/**")
+            }
+        }))
     }
     jacocoTestCoverageVerification {
+        classDirectories.setFrom(files(classDirectories.files.map {
+            fileTree(it) {
+                exclude("**/generated/**")
+            }
+        }))
         violationRules {
             rule {
                 limit {
@@ -56,9 +66,6 @@ tasks {
                     value = "COVEREDRATIO"
                     minimum = "0.50".toBigDecimal()
                 }
-                excludes = listOf(
-
-                )
             }
         }
     }
@@ -71,7 +78,7 @@ tasks {
         }
         useJUnitPlatform()
     }
-    withType<JavaCompile> {
+    compileJava {
         options.release.set(25)
     }
 }

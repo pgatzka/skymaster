@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 
 import io.github.pgatzka.skymaster.api.API;
 import io.github.pgatzka.skymaster.api.pojo.HandshakeIdentity;
+import io.github.pgatzka.skymaster.generated.openapi.ApiException;
+import io.github.pgatzka.skymaster.generated.openapi.model.HandshakeRequest;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -22,8 +24,6 @@ import java.util.function.LongSupplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.openapitools.client.ApiException;
-import org.openapitools.client.model.HandshakeRequest;
 
 class HandshakeServiceTest {
 

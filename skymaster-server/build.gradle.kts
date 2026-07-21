@@ -21,7 +21,7 @@ dependencies {
 
     testRuntimeOnly(libs.junit.launcher)
 
-    mockitoAgent(libs.mockito.core) { isTransitive = false}
+    mockitoAgent(libs.mockito.core) { isTransitive = false }
 }
 
 springBoot {
@@ -44,6 +44,9 @@ tasks {
     processTestAot {
         jvmArgs("-javaagent:${mockitoAgent.asPath}", "-Xshare:off")
     }
+    check {
+        dependsOn(jacocoTestCoverageVerification)
+    }
 }
 
 val openApiGeneratePort = Random.nextInt(8080, 9090)
@@ -53,13 +56,15 @@ openApi {
     outputFileName.set("spec.json")
     apiDocsUrl.set(apiDocsUrl.get().replace("8080", "$openApiGeneratePort"))
     customBootRun {
-        args.set(listOf(
-            "--spring.docker.compose.file=${file("compose.yaml").absolutePath}",
-            "--server.port=$openApiGeneratePort",
-            "--springdoc.api-docs.enabled=true",
-            "--springdoc.swagger-ui.enabled=true",
-            "--logging.level.root=warn"
-        ))
+        args.set(
+            listOf(
+                "--spring.docker.compose.file=${file("compose.yaml").absolutePath}",
+                "--server.port=$openApiGeneratePort",
+                "--springdoc.api-docs.enabled=true",
+                "--springdoc.swagger-ui.enabled=true",
+                "--logging.level.root=warn"
+            )
+        )
     }
 }
 

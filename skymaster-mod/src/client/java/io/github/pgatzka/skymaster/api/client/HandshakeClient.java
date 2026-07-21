@@ -1,7 +1,7 @@
 package io.github.pgatzka.skymaster.api.client;
 
-import org.openapitools.client.ApiException;
-import org.openapitools.client.model.HandshakeRequest;
+import io.github.pgatzka.skymaster.generated.openapi.ApiException;
+import io.github.pgatzka.skymaster.generated.openapi.model.HandshakeRequest;
 
 @FunctionalInterface
 public interface HandshakeClient {

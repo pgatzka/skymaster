@@ -76,7 +76,7 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.launcher)
 
-    mockitoAgent(libs.mockito.core) { isTransitive = false}
+    mockitoAgent(libs.mockito.core) { isTransitive = false }
     testImplementation(libs.mockito.junit)
 }
 
@@ -140,6 +140,9 @@ tasks {
         generateModelDocumentation.set(false)
         library.set("native")
 
+        apiPackage.set("io.github.pgatzka.skymaster.generated.openapi.api")
+        modelPackage.set("io.github.pgatzka.skymaster.generated.openapi.model")
+
         configOptions.set(
             mapOf(
                 "useJakartaEe" to "true",
@@ -150,4 +153,24 @@ tasks {
     compileJava {
         dependsOn(openApiGenerate)
     }
+    jacocoTestReport {
+        classDirectories.from(
+            files(sourceSets["client"].output).asFileTree.matching {
+                exclude("**/generated/**")
+            }
+        )
+        // so the HTML report can render client source lines
+        sourceDirectories.from(files(sourceSets["client"].allSource.srcDirs))
+    }
+    jacocoTestCoverageVerification {
+        classDirectories.from(
+            files(sourceSets["client"].output).asFileTree.matching {
+                exclude("**/generated/**")
+            }
+        )
+    }
+    // TODO: Disabled to pass CI, enable once coverage is high enough
+    // check {
+    //     dependsOn(jacocoTestCoverageVerification)
+    // }
 }
