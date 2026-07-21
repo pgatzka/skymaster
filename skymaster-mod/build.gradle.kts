@@ -173,4 +173,29 @@ tasks {
     // check {
     //     dependsOn(jacocoTestCoverageVerification)
     // }
+    openApiValidate.configure {
+        inputSpec.set(layout.file(providers.provider { openApiSpec.incoming.files.singleFile }))
+        dependsOn(openApiSpec)
+    }
+    openApiGenerate.configure {
+        inputSpec.set(layout.file(providers.provider { openApiSpec.incoming.files.singleFile }))
+        dependsOn(openApiSpec)
+        generatorName.set("java")
+
+        generateApiTests.set(false)
+        generateModelTests.set(false)
+        generateApiDocumentation.set(false)
+        generateModelDocumentation.set(false)
+        library.set("native")
+
+        configOptions.set(
+            mapOf(
+                "useJakartaEe" to "true",
+                "openApiNullable" to "false"
+            )
+        )
+    }
+    compileJava {
+        dependsOn(openApiGenerate)
+    }
 }
