@@ -1,4 +1,5 @@
 [versions]
+mockito = "5.20.0"
 spring-boot = "4.0.7"
 
 [plugins]
@@ -24,10 +25,13 @@ jackson-annotations = { group = "com.fasterxml.jackson.core", name = "jackson-an
 jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind" }
 jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310" }
 jakarta-annotations = { group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.1.1" }
-
-
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-junit = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
 devauth = { group = "me.djtheredstoner", name = "DevAuth-fabric", version = "1.2.1" }
 minecraft = { group = "com.mojang", name = "minecraft", version = "26.1.2" }
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.19.3" }
 fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.154.2+26.1.2" }
-httpclient = { module = "org.apache.httpcomponents:httpclient", version = "4.5.14" }
+httpclient = { group = "org.apache.httpcomponents", name = "httpclient", version = "4.5.14" }
+moulconfig = { group = "org.notenoughupdates.moulconfig", name = "modern-26.1", version = "4.7.2" }
+fabric-kotlin = { group = "net.fabricmc", name = "fabric-language-kotlin", version = "1.13.12+kotlin.2.4.0" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version = "6.0.3" }
