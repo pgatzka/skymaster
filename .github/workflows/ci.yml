@@ -118,6 +118,7 @@ jobs:
           echo '${{ toJSON(needs) }}'
           exit 1
   deploy-ci:
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
       packages: read
