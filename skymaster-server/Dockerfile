@@ -8,7 +8,7 @@ COPY ${JAR_FILE} application.jar
 
 RUN java -Djarmode=tools -jar application.jar extract --layers --destination extracted
 
-FROM eclipse-temurin:25-jdk-alpine AS runtime
+FROM eclipse-temurin:25-jre-alpine AS runtime
 
 WORKDIR /runtime
 

@@ -12,11 +12,13 @@ plugins {
 val mockitoAgent = configurations.create("mockitoAgent")
 
 dependencies {
+    implementation(libs.spring.boot.actuator)
     implementation(libs.spring.boot.webmvc)
     implementation(libs.springdoc)
 
     developmentOnly(libs.spring.boot.devtools)
 
+    testImplementation(libs.spring.boot.actuator.test)
     testImplementation(libs.spring.boot.webmvc.test)
 
     testRuntimeOnly(libs.junit.launcher)

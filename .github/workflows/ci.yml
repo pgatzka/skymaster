@@ -18,43 +18,40 @@ concurrency:
 permissions: { }
 
 jobs:
-  # There is deliberately no separate formatting job. `build` depends on `check`,
-  # which already runs spotlessCheck. A dedicated job measured 147s against build's
-  # 110s - Gradle configures every project regardless of the task requested, and
-  # Loom's Minecraft setup dominates that. Splitting it out reported formatting
-  # errors more slowly than not splitting it out.
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Environment
+        uses: ./.github/actions/setup-environment
+      - name: Verify Formatting
+        run: ./gradlew spotlessCheck
   build:
     name: Build
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    env:
+      HAS_SONAR_TOKEN: ${{ secrets.SONAR_TOKEN != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          # Sonar reads git blame to attribute issues to authors and to decide
-          # what counts as new code. A shallow clone silently degrades both.
           fetch-depth: 0
-
-      - name: Setup Build
-        uses: ./.github/actions/setup-build
-
-      # Gradle owns the module ordering: :skymaster-server publishes the OpenAPI
-      # spec that :skymaster-mod generates the api code from.
-      # Splitting that chain across jobs duplicates work rather than parallelising it.
-      #
-      # `sonar` must share this invocation with `build`. The Sonar plugin orders
-      # itself with mustRunAfter, not dependsOn, so `gradlew sonar` alone runs no
-      # tests and produces no JaCoCo report - it reports 0% coverage without error.
-      #
-      # TODO: add -Dsonar.qualitygate.wait=true once tests exist. It is omitted
-      # deliberately: there are no tests, so coverage is 0% and every gate fails.
-      # Sonar still analyses and reports - the result just does not block.
-      - name: Build and Analyse
+      - name: Setup Environment
+        uses: ./.github/actions/setup-environment
+      - name: Build
+        run: ./gradlew build
+      - name: Analyze Server
+        if: env.HAS_SONAR_TOKEN == 'true'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonar
-
+        run: ./gradlew :skymaster-server:sonar -Dsonar.qualitygate.wait=true
+      - name: Analyze mod
+        if: env.HAS_SONAR_TOKEN == 'true'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew :skymaster-mod:sonar
       - name: Upload Server Jar
         uses: actions/upload-artifact@v7
         with:
@@ -62,7 +59,6 @@ jobs:
           path: skymaster-server/build/libs/*.jar
           retention-days: 7
           if-no-files-found: error
-
       - name: Upload Mod Jar
         uses: actions/upload-artifact@v7
         with:
@@ -70,49 +66,65 @@ jobs:
           path: skymaster-mod/build/libs/*.jar
           retention-days: 7
           if-no-files-found: error
-
-  # Proves the Dockerfile still builds from the jar this run produced. Nothing is
-  # pushed here - the registry push happens only on release, from the same jar.
   build-image:
     name: Build Image
     needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-
-      # `path` is a single destination string, not a list. Passing a multi-line
-      # block here is what broke the previous pipeline (62fac8f).
       - name: Download Server Jar
         uses: actions/download-artifact@v8
         with:
           name: server-jar
           path: skymaster-server/build/libs
-
       - name: Setup Buildx
-        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
-
-      - name: Build Image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c
+      - name: Log in to GHCR
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=sha
+            type=raw,value=snapshot
+      - name: Build and Push Image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a
         with:
           context: skymaster-server
-          push: false
-
-  # The single required status check. Registering the individual jobs instead
-  # would break every time a job is added or renamed.
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
   ci-gate:
     name: CI Gate
-    needs: [ build, build-image ]
+    needs: [ verify, build, build-image ]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-      # `skipped` is deliberately tolerated - a job skipped by its own condition
-      # is legitimate. `cancelled` is not: without it a cancelled run reports green.
       - name: Verify Dependencies Succeeded
         if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
         run: |
           echo "One or more jobs did not succeed:"
           echo '${{ toJSON(needs) }}'
           exit 1
+  deploy-ci:
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: read
+    needs: [build-image]
+    uses: ./.github/workflows/deploy.yml
+    with:
+      image_tag: snapshot
+      environment: ci
+    secrets: inherit

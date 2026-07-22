@@ -16,6 +16,8 @@ springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-
 spring-boot-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc" }
 spring-boot-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test" }
 spring-boot-devtools = { group = "org.springframework.boot", name = "spring-boot-devtools" }
+spring-boot-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator" }
+spring-boot-actuator-test = { group = "org.springframework.boot", name = "spring-boot-starter-actuator-test" }
 junit-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
 jackson-bom = { group = "com.fasterxml.jackson", name = "jackson-bom", version = "2.21.4" }
 jackson-core = { group = "com.fasterxml.jackson.core", name = "jackson-core" }
