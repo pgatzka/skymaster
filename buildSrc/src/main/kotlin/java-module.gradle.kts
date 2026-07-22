@@ -11,10 +11,6 @@ java {
     }
 }
 
-tasks.withType<JavaCompile> {
-    options.release.set(25)
-}
-
 spotless {
     java {
         // Target the checked-in sources directly rather than letting Spotless derive
@@ -27,22 +23,33 @@ spotless {
     }
 }
 
-// Sonar does not measure coverage, it only imports it. Without a JaCoCo XML
-// report produced by this module's own test run, the project reports 0%.
 val jacocoXmlReport = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
 
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required = true
-        html.required = false
+tasks {
+    jacocoTestReport {
+        dependsOn(test)
+        reports {
+            xml.required = true
+            html.required = true
+        }
+        classDirectories.setFrom(files(classDirectories.files.map {
+            fileTree(it) {
+                exclude("**/generated/**")
+            }
+        }))
     }
-}
-
-// Keeps coverage a product of the normal build rather than a task CI must
-// remember to add. `check` is what `build` runs.
-tasks.check {
-    dependsOn(tasks.jacocoTestReport)
+    test {
+        finalizedBy(jacocoTestReport)
+        testLogging {
+            testLogging {
+                events("passed", "skipped", "failed")
+            }
+        }
+        useJUnitPlatform()
+    }
+    compileJava {
+        options.release.set(25)
+    }
 }
 
 sonar {

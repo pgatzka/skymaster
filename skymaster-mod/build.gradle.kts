@@ -3,6 +3,7 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 plugins {
     id("java-module")
     id("maven-publish")
+    alias(libs.plugins.lombok)
     alias(libs.plugins.loom)
     alias(libs.plugins.openapi)
 }
@@ -28,6 +29,7 @@ java {
 
 repositories {
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
+    maven("https://maven.notenoughupdates.org/releases/")
 }
 
 loom {
@@ -45,6 +47,8 @@ val shipped = configurations.create("shipped")
 configurations {
     implementation.get().extendsFrom(shipped)
 }
+
+val mockitoAgent = configurations.create("mockitoAgent")
 
 dependencies {
     minecraft(libs.minecraft)
@@ -65,6 +69,15 @@ dependencies {
     localRuntime(libs.devauth)
 
     openApiSpec(project(mapOf("path" to ":skymaster-server", "configuration" to "openApiSpec")))
+
+    implementation(libs.fabric.kotlin)
+    shipped(libs.moulconfig)
+
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.launcher)
+
+    mockitoAgent(libs.mockito.core) { isTransitive = false }
+    testImplementation(libs.mockito.junit)
 }
 
 afterEvaluate {
@@ -108,6 +121,45 @@ tasks {
         from("LICENSE") {
             rename { "${it}_${project.name}" }
         }
+    }
+    test {
+        jvmArgs("-javaagent:${mockitoAgent.asPath}", "-Xshare:off")
+    }
+    openApiValidate.configure {
+        inputSpec.set(layout.file(providers.provider { openApiSpec.incoming.files.singleFile }))
+        dependsOn(openApiSpec)
+    }
+    openApiGenerate.configure {
+        inputSpec.set(layout.file(providers.provider { openApiSpec.incoming.files.singleFile }))
+        dependsOn(openApiSpec)
+        generatorName.set("java")
+
+        generateApiTests.set(false)
+        generateModelTests.set(false)
+        generateApiDocumentation.set(false)
+        generateModelDocumentation.set(false)
+        library.set("native")
+
+        apiPackage.set("io.github.pgatzka.skymaster.generated.openapi.api")
+        modelPackage.set("io.github.pgatzka.skymaster.generated.openapi.model")
+
+        configOptions.set(
+            mapOf(
+                "useJakartaEe" to "true",
+                "openApiNullable" to "false"
+            )
+        )
+    }
+    compileJava {
+        dependsOn(openApiGenerate)
+    }
+    jacocoTestReport {
+        classDirectories.from(
+            files(sourceSets["client"].output).asFileTree.matching {
+                exclude("**/generated/**")
+            }
+        )
+        sourceDirectories.from(files(sourceSets["client"].allSource.srcDirs))
     }
     openApiValidate.configure {
         inputSpec.set(layout.file(providers.provider { openApiSpec.incoming.files.singleFile }))
