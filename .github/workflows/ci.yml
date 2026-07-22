@@ -117,3 +117,10 @@ jobs:
           echo "One or more jobs did not succeed:"
           echo '${{ toJSON(needs) }}'
           exit 1
+  deploy-ci:
+    needs: [build-image]
+    uses: ./.github/workflows/deploy.yml
+    with:
+      image_tag: snapshot
+      environment: ci
+    secrets: inherit

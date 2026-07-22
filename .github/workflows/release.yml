@@ -152,7 +152,7 @@ jobs:
     name: Deploy to CI
     needs: publish-image
     if: false
-    uses: ./.github/workflows/_deploy.yml
+    uses: deploy.yml
     with:
       environment: ci
       image-digest: ${{ needs.publish-image.outputs.digest }}
@@ -161,7 +161,7 @@ jobs:
     name: Deploy to Production
     needs: [ publish-image, deploy-ci ]
     if: false
-    uses: ./.github/workflows/_deploy.yml
+    uses: deploy.yml
     with:
       environment: production
       image-digest: ${{ needs.publish-image.outputs.digest }}
