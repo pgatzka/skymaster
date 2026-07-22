@@ -118,6 +118,9 @@ jobs:
           echo '${{ toJSON(needs) }}'
           exit 1
   deploy-ci:
+    permissions:
+      contents: read
+      packages: read
     needs: [build-image]
     uses: ./.github/workflows/deploy.yml
     with:
