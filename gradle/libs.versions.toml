@@ -1,5 +1,5 @@
 [versions]
-mockito = "5.20.0"
+mockito = "5.23.0"
 spring-boot = "4.0.7"
 
 [plugins]
