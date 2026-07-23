@@ -15,12 +15,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set title and description
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.pull_request.number }}
           BRANCH: ${{ github.head_ref }}
         run: |
-          BODY=$(gh api "repos/$REPO/pulls/$NUMBER/commits" --paginate \
+          set -euo pipefail
+          MARKER='<!-- pr-decorator:end -->'
+
+          COMMITS=$(gh api "repos/$REPO/pulls/$NUMBER/commits" --paginate \
             --jq '.[] | "* [" + .sha[0:7] + "] " + (.commit.author.date | fromdateiso8601 | strftime("%d.%m.%Y %H:%M")) + " " + (.commit.message | split("\n")[0])')
-          gh pr edit "$NUMBER" --repo "$REPO" --title "$BRANCH" --body "$BODY"
+
+          OLD_BODY=$(gh pr view "$NUMBER" --repo "$REPO" --json body --jq .body)
+
+          # Keep only what the human wrote: everything after the marker,
+          # or the whole body if the marker isn't there yet (first run).
+          if printf '%s\n' "$OLD_BODY" | grep -qF "$MARKER"; then
+            USER_BODY=$(printf '%s\n' "$OLD_BODY" | awk -v m="$MARKER" 'found { print } $0 == m { found = 1 }')
+          else
+            USER_BODY=$OLD_BODY
+          fi
+
+          {
+            if [[ "$BRANCH" =~ ^([0-9]+) ]]; then
+              printf 'FIXES #%s\n\n' "${BASH_REMATCH[1]}"
+            fi
+            printf '%s\n\n' "$COMMITS"
+            printf '%s\n' "$MARKER"
+            if [ -n "$USER_BODY" ]; then
+              printf '%s\n' "$USER_BODY"
+            fi
+          } > "$RUNNER_TEMP/body.md"
+
+          gh pr edit "$NUMBER" --repo "$REPO" --title "$BRANCH" --body-file "$RUNNER_TEMP/body.md"
