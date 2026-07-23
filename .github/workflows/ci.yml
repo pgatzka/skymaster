@@ -60,7 +60,7 @@ jobs:
           retention-days: 7
           if-no-files-found: error
       - name: Upload Mod Jar
-        # if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v7
         with:
           name: mod-jar
@@ -132,7 +132,7 @@ jobs:
       environment: ci
     secrets: inherit
   publish-mod:
-    # if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs: [ build ]
     runs-on: ubuntu-latest
     steps:
