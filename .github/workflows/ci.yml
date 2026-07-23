@@ -60,10 +60,13 @@ jobs:
           retention-days: 7
           if-no-files-found: error
       - name: Upload Mod Jar
+        # if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v7
         with:
           name: mod-jar
-          path: skymaster-mod/build/libs/*.jar
+          path: |
+            skymaster-mod/build/libs/*.jar
+            skymaster-mod/build/libs/*-sources.jar
           retention-days: 7
           if-no-files-found: error
   build-image:
@@ -122,9 +125,50 @@ jobs:
     permissions:
       contents: read
       packages: read
-    needs: [build-image]
+    needs: [ build-image ]
     uses: ./.github/workflows/deploy.yml
     with:
       image_tag: snapshot
       environment: ci
     secrets: inherit
+  publish-mod:
+    # if: github.ref == 'refs/heads/main'
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Setup Environment
+        uses: ./.github/actions/setup-environment
+      - name: Get version
+        id: version
+        run: echo "version=$(./gradlew -q printVersion | tail -n 1)" >> "$GITHUB_OUTPUT"
+      - name: Download Server Jar
+        uses: actions/download-artifact@v8
+        with:
+          name: mod-jar
+          path: skymaster-mod/build/libs
+      - name: Delete previous snapshot
+        env:
+          TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+          MODRINTH_ID: oxXL4meD
+        run: |
+          id=$(curl -s -H "Authorization: $TOKEN" -H "User-Agent: pgatzka/skymaster" \
+            "https://api.modrinth.com/v2/project/$MODRINTH_ID/version/$VERSION" \
+            | jq -r '.id // empty')
+          if [ -n "$id" ]; then
+            curl -sf -X DELETE -H "Authorization: $TOKEN" -H "User-Agent: pgatzka/skymaster" \
+              "https://api.modrinth.com/v2/version/$id"
+          fi
+      - name: Publish Mod
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: skymaster-mod/build/libs/*.jar
+          version-type: alpha
+          github-token: ""
+          modrinth-featured: false
+          version: ${{ steps.version.outputs.version }}
