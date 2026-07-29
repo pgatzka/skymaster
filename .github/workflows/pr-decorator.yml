@@ -25,8 +25,26 @@ jobs:
           set -euo pipefail
           MARKER='<!-- pr-decorator:end -->'
 
+          TITLE=$(printf '%s\n' "$BRANCH" \
+            | tr '[:upper:]' '[:lower:]' \
+            | sed 's/[^a-z0-9]/ /g; s/  */ /g; s/^ //; s/ $//')
+
           COMMITS=$(gh api "repos/$REPO/pulls/$NUMBER/commits" --paginate \
-            --jq '.[] | "* [" + .sha[0:7] + "] " + (.commit.author.date | fromdateiso8601 | strftime("%d.%m.%Y %H:%M")) + " " + (.commit.message | split("\n")[0])')
+            --jq '
+              def clean:
+                ascii_downcase
+                | gsub("[^a-z0-9 .,\\[\\]\"]"; " ")
+                | gsub(" +"; " ")
+                | sub("^ +"; "")
+                | sub(" +$"; "");
+              .[]
+              | "["
+                + .sha[0:7]
+                + "] "
+                + (.commit.author.date | fromdateiso8601 | strftime("%d.%m.%Y"))
+                + ", "
+                + (.commit.message | split("\n")[0] | clean)
+            ')
 
           OLD_BODY=$(gh pr view "$NUMBER" --repo "$REPO" --json body --jq .body)
 
@@ -40,7 +58,7 @@ jobs:
 
           {
             if [[ "$BRANCH" =~ ^([0-9]+) ]]; then
-              printf 'FIXES #%s\n\n' "${BASH_REMATCH[1]}"
+              printf 'fixes #%s\n\n' "${BASH_REMATCH[1]}"
             fi
             printf '%s\n\n' "$COMMITS"
             printf '%s\n' "$MARKER"
@@ -49,4 +67,4 @@ jobs:
             fi
           } > "$RUNNER_TEMP/body.md"
 
-          gh pr edit "$NUMBER" --repo "$REPO" --title "$BRANCH" --body-file "$RUNNER_TEMP/body.md"
+          gh pr edit "$NUMBER" --repo "$REPO" --title "$TITLE" --body-file "$RUNNER_TEMP/body.md"
