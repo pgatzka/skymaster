@@ -110,7 +110,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
   ci-gate:
     name: CI Gate
-    needs: [ verify, build, build-image ]
+    needs: [ verify, build, build-image, publish-mod ]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
@@ -135,6 +135,10 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: [ build ]
     runs-on: ubuntu-latest
+    environment: modrinth
+    permissions:
+      actions: read
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -142,30 +146,33 @@ jobs:
           fetch-depth: 0
       - name: Setup Environment
         uses: ./.github/actions/setup-environment
-      - name: Get version
+      - name: get unique snapshot version
         id: version
-        run: echo "version=$(./gradlew -q printVersion | tail -n 1)" >> "$GITHUB_OUTPUT"
-      - name: Download Server Jar
+        run: |
+          set -euo pipefail
+          base_version=$(./gradlew -q printVersion | tail -n 1)
+          printf 'version=%s-%s\n' "$base_version" "${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - name: download mod jar
         uses: actions/download-artifact@v8
         with:
           name: mod-jar
           path: skymaster-mod/build/libs
-      - name: Delete previous snapshot
+      - name: validate modrinth project
         env:
           TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-          VERSION: ${{ steps.version.outputs.version }}
           MODRINTH_ID: oxXL4meD
         run: |
-          id=$(curl -s -H "Authorization: $TOKEN" -H "User-Agent: pgatzka/skymaster" \
-            "https://api.modrinth.com/v2/project/$MODRINTH_ID/version/$VERSION" \
+          set -euo pipefail
+          project_id=$(curl --fail --silent --show-error \
+            -H "Authorization: $TOKEN" \
+            -H "User-Agent: pgatzka/skymaster" \
+            "https://api.modrinth.com/v2/project/$MODRINTH_ID" \
             | jq -r '.id // empty')
-          if [ -n "$id" ]; then
-            curl -sf -X DELETE -H "Authorization: $TOKEN" -H "User-Agent: pgatzka/skymaster" \
-              "https://api.modrinth.com/v2/version/$id"
-          fi
-      - name: Publish Mod
-        uses: Kir-Antipov/mc-publish@v3.3
+          test "$project_id" = "$MODRINTH_ID"
+      - name: publish mod
+        uses: Kir-Antipov/mc-publish@52307b03863581dec6b652b83e597aec02ebb075
         with:
+          modrinth-id: oxXL4meD
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           files: skymaster-mod/build/libs/*.jar
           version-type: alpha
