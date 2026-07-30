@@ -2,7 +2,7 @@
 
 Why the server cannot believe what the mod tells it, and the design that fixes it.
 
-This is the area where a plausible-looking shortcut is most likely to be insecure, so the reasoning
+This is the area where a shortcut that looks plausible is most likely to be insecure, so the reasoning
 matters more than the conclusion.
 
 ## The threat
@@ -11,35 +11,35 @@ The mod runs on the player's machine and can be modified or replaced entirely. A
 is a claim, not a fact.
 
 **Minecraft UUIDs are public.** They are trivially looked up from a username, and who is currently
-online is observable. So "the client says it is UUID X" carries no weight — an attacker picks any
+online is observable. So "the client says it is UUID X" carries no weight. An attacker picks any
 online player's UUID and submits data as them.
 
 ## Current state
 
 `HandshakeService` compares the mod's version against the server's build version and nothing else.
-Identity is entirely unverified, and version equality is exact — so every server release rejects
+Identity is entirely unverified, and version equality is exact. Every server release therefore rejects
 every deployed mod. Both are being replaced: identity by #31 and #33, the version rule by #39.
 
 ## The design
 
-Three checks, in this order, each cheap-to-expensive:
+Use three checks in increasing order of cost.
 
-1. **Version** — is this mod version supported? Rejecting here costs no upstream calls.
-2. **Account ownership** — does the caller actually control this Minecraft account?
-3. **SkyBlock presence** — is that account online and in SkyBlock right now?
+1. **Version.** Is this mod version supported? Rejecting here costs no upstream calls.
+2. **Account ownership.** Does the caller actually control this Minecraft account?
+3. **SkyBlock presence.** Is that account online and in SkyBlock right now?
 
 ### Proving account ownership
 
-The mechanism is Mojang's `joinServer` / `hasJoined` pair — the same exchange a real Minecraft server
+The mechanism is Mojang's `joinServer` and `hasJoined` pair. This is the same exchange a real Minecraft server
 uses to authenticate a joining player:
 
-1. The server generates a single-use random `serverId` and returns it as a challenge.
+1. The server generates a random `serverId` for one use and returns it as a challenge.
 2. The mod calls Mojang's `joinServer` with that `serverId`, using the player's session.
 3. The mod sends the `serverId` to our server.
 4. Our server asks Mojang's `hasJoined` whether that account completed a join for that `serverId`.
 
 The server chooses the nonce, so the proof cannot be replayed. The profile Mojang returns is
-authoritative — the token's subject comes from that, never from the client-supplied UUID.
+authoritative. The token subject comes from that profile, never from the UUID supplied by the client.
 
 ### Why not just send the session id
 
@@ -49,7 +49,7 @@ itself, not a proof of ownership:
 
 - Forwarding it puts full control of every player's Microsoft account into our server, our logs, and
   anything on the wire.
-- Mods that ask for your session token are the best-known account-theft pattern in the ecosystem.
+- Mods that ask for your session token are a well known account theft pattern in the ecosystem.
 - It does not even work. Mojang exposes no endpoint letting a third party ask whose token a token is,
   so the server could only "verify" it by impersonating the player.
 
@@ -64,7 +64,7 @@ from a SkyBlock session should come from one. Hypixel's status endpoint answers 
 and leaves.
 
 Note the ordering carefully: **the Hypixel check alone proves nothing about identity.** It confirms
-that *someone* is online — without the ownership step it is exactly the spoofable check described
+that *someone* is online. Without the ownership step it is exactly the spoofable check described
 above.
 
 ## Principles
@@ -73,12 +73,12 @@ above.
   passes when the verifier is down can be bypassed by attacking the verifier.
 - **Distinguish "rejected" from "could not verify"** in the response, so the client knows whether to
   tell the user something or to quietly retry.
-- **Never log credentials** — session access tokens, the Hypixel API key, or issued tokens.
-- **Short-lived tokens over revocation.** The planned JWT is signed with a keypair generated in
-  memory at startup, so there is no long-lived secret to leak; a restart simply invalidates
-  outstanding tokens and clients re-login.
+- **Never log credentials.** This includes session access tokens, the Hypixel API key, and issued tokens.
+- **Prefer tokens with short lifetimes over revocation.** The planned JWT is signed with a keypair generated in
+  memory at startup, so there is no persistent secret to leak. A restart invalidates
+  outstanding tokens and clients log in again.
 
 ## Where the detail lives
 
-The full contract — status codes, machine-readable rejection codes, and the mod's behaviour for each
-— is in #31 and #33, tracked together under #32.
+The full contract, including status codes, rejection codes, and the mod behavior for each outcome,
+is in issues 31 and 33, tracked together under issue 32.

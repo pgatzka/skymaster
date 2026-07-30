@@ -6,11 +6,11 @@ build has two modules: `skymaster-server` (the REST API, which publishes its Ope
 
 ## Documentation
 
-- **[`docs/README.md`](docs/README.md)** — the knowledge base. Architecture, the build and codegen chain, CI and deployment, auth and identity, and a symptom-first list of pitfalls. Start here when you need to understand *why* something is built the way it is.
-- **[`CLAUDE.md`](CLAUDE.md)** — project-wide conventions: build commands, the rules that apply everywhere, and a map of where the rest of the knowledge lives.
-- **[`skymaster-server/CLAUDE.md`](skymaster-server/CLAUDE.md)** and **[`skymaster-mod/CLAUDE.md`](skymaster-mod/CLAUDE.md)** — the conventions and traps specific to each module. Read the one for the module you are working in; most of what bites is module-local.
+[`docs/README.md`](docs/README.md) is the documentation index. It links the architecture, build and
+code generation, CI and deployment, authentication, identity, and troubleshooting guides.
 
-Open GitHub issues carry the rationale for decisions that are already settled — check them before proposing a design.
+Open GitHub issues carry the rationale for settled future work. Check them before proposing a
+design.
 
 ## Development
 
@@ -68,7 +68,7 @@ The expected value is:
 
 #### Common failures
 
-- **The push is not blocked and no formatting check runs.** `core.hooksPath` is probably unset or pointing at the wrong directory. Re-run `./gradlew installGitHooks` and verify with the command above.
+- **The push is not blocked and no formatting check runs.** `core.hooksPath` is probably unset or pointing at the wrong directory. Rerun `./gradlew installGitHooks` and verify with the command above.
 - **The `installGitHooks` task is not found.** Run the command from the repository root, and make sure you are using the Gradle wrapper (`./gradlew`) rather than a system Gradle install.
 - **The formatting check itself errors out.** This is usually a Java version mismatch. Confirm Java 25 is active with `java -version`.
 - **A global hooks path overrides the project one.** If you previously set `core.hooksPath` globally, that value can take precedence. Check with `git config --global --get core.hooksPath` and unset it if needed.

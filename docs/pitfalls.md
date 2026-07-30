@@ -1,11 +1,9 @@
 # Pitfalls
 
-Symptom first — you have an error, not a diagnosis. Find what you saw, then read the cause.
+Start with the symptom. Find what you saw, then read the cause.
 
 Add to this file when something costs you more than a few minutes to work out, or when the same
-mistake happens twice. Use `/capture-pitfall`.
-
----
+mistake happens twice.
 
 ## Build
 
@@ -30,7 +28,7 @@ includes the generated directory, so the check now depends on codegen, which boo
 
 **Fix:** keep `target("src/**/*.java")` literal in `buildSrc/.../java-module.gradle.kts`.
 
-### Push rejected by the pre-push hook
+### Push rejected by the formatting hook
 
 **Cause:** `spotlessCheck` failed. The hook already ran `spotlessApply` for you.
 
@@ -64,14 +62,14 @@ release. Almost always `/actuator/health` became unreachable, slow, or authentic
 ### The whole build breaks after a security or actuator change
 
 **Cause:** the springdoc paths are no longer reachable, so `generateOpenApiDocs` cannot produce
-`spec.json` — and the mod's compile depends on it. The error appears in the mod, far from the change.
+`spec.json`, and the mod compile depends on it. The error appears in the mod, far from the change.
 
 **Fix:** permit the springdoc paths in the filter chain.
 
 ### A wrong HTTP method returns 500 instead of 405
 
 **Cause:** `RestExceptionHandler` handles `Exception.class` without extending
-`ResponseEntityExceptionHandler`, so Spring's own exceptions fall into the catch-all.
+`ResponseEntityExceptionHandler`, so Spring's own exceptions fall into the general exception handler.
 
 **Fix:** tracked in #31.
 
@@ -117,11 +115,13 @@ and the two drifted.
 **Cause:** blocking network calls on the client tick thread. `DataCollectionModule.onEndTick`
 currently does this; an upstream timeout freezes rendering for its full duration.
 
-**Fix:** do not add blocking work there. Moving the existing calls off-thread is part of #33.
+**Fix:** do not add blocking work there. Moving the existing calls off the tick thread is part of
+issue 33.
 
 ### Code in `src/main` cannot see Minecraft client classes
 
-**Cause:** Loom's `splitEnvironmentSourceSets()` — client classes are only on `src/client`'s
-classpath. Code misplaced in `main` also escapes coverage and Sonar, which both target `client`.
+**Cause:** Loom's `splitEnvironmentSourceSets()` puts client classes only on the `src/client`
+classpath. Code misplaced in `main` also escapes the mod coverage report. The repository does not
+configure Sonar to analyze only the client source set.
 
 **Fix:** put it in `src/client/java`.

@@ -1,11 +1,7 @@
 # SkyMaster knowledge base
 
-Background knowledge that does not belong in `CLAUDE.md` — the *why* behind the rules, and enough
-context to make good decisions without re-deriving the system every time.
-
-`CLAUDE.md` files carry rules and are loaded automatically. These documents carry understanding and
-are read on demand. If something here becomes a rule you must never break, it belongs in a
-`CLAUDE.md` instead — or better, in enforcement.
+This documentation explains why the project is structured as it is and gives maintainers enough
+context to make changes without rediscovering the same behavior.
 
 ## Map
 
@@ -19,19 +15,18 @@ are read on demand. If something here becomes a rule you must never break, it be
 
 ## Related
 
-- GitHub issues — settled designs with their rationale. Check before proposing a new one.
-- `issues/` — staging area for drafts awaiting filing. Created on demand, not carried when empty.
-- `skymaster-server/CLAUDE.md`, `skymaster-mod/CLAUDE.md` — module-local rules.
+- GitHub issues contain settled designs and their rationale. Check them before proposing a new one.
+- The root [`README.md`](../README.md) contains setup instructions and the development entry point.
 
 ## Conventions
 
-So this stays navigable rather than becoming a wall of bullets:
+Use these conventions to keep the documentation navigable.
 
 - **One topic per file.** If a document starts covering two things, split it and update the map.
 - **Lead each section with what it is about**, so a reader skimming headings can tell whether to
   keep going.
-- **Pitfalls are symptom-first.** The reader has an error message, not a diagnosis — the heading
+- **Pitfalls are symptom first.** The reader has an error message, not a diagnosis. The heading
   should be what they saw.
 - **Explain the reasoning, not just the conclusion.** A rule without its rationale gets "cleaned up"
   by the next person who does not know why it exists.
-- **Link, don't duplicate.** One home per fact, referenced from elsewhere.
+- **Link instead of duplicating.** Keep one home per fact and reference it from elsewhere.
