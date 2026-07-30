@@ -1,5 +1,17 @@
 # SkyMaster
 
+A Fabric client mod for Minecraft that reports Hypixel SkyBlock data to a Spring Boot server. The
+build has two modules: `skymaster-server` (the REST API, which publishes its OpenAPI spec) and
+`skymaster-mod` (the mod, which generates its HTTP client from that spec).
+
+## Documentation
+
+- **[`docs/README.md`](docs/README.md)** — the knowledge base. Architecture, the build and codegen chain, CI and deployment, auth and identity, and a symptom-first list of pitfalls. Start here when you need to understand *why* something is built the way it is.
+- **[`CLAUDE.md`](CLAUDE.md)** — project-wide conventions: build commands, the rules that apply everywhere, and a map of where the rest of the knowledge lives.
+- **[`skymaster-server/CLAUDE.md`](skymaster-server/CLAUDE.md)** and **[`skymaster-mod/CLAUDE.md`](skymaster-mod/CLAUDE.md)** — the conventions and traps specific to each module. Read the one for the module you are working in; most of what bites is module-local.
+
+Open GitHub issues carry the rationale for decisions that are already settled — check them before proposing a design.
+
 ## Development
 
 ### Requirements
