@@ -1,3 +1,4 @@
+/.claude/settings.local.json
 /.gradle/
 /build/
 /buildSrc/.gradle/
