@@ -1,5 +1,17 @@
 # SkyMaster
 
+A Fabric client mod for Minecraft that reports Hypixel SkyBlock data to a Spring Boot server. The
+build has two modules: `skymaster-server` (the REST API, which publishes its OpenAPI spec) and
+`skymaster-mod` (the mod, which generates its HTTP client from that spec).
+
+## Documentation
+
+[`docs/README.md`](docs/README.md) is the documentation index. It links the architecture, build and
+code generation, CI and deployment, authentication, identity, and troubleshooting guides.
+
+Open GitHub issues carry the rationale for settled future work. Check them before proposing a
+design.
+
 ## Development
 
 ### Requirements
@@ -56,7 +68,7 @@ The expected value is:
 
 #### Common failures
 
-- **The push is not blocked and no formatting check runs.** `core.hooksPath` is probably unset or pointing at the wrong directory. Re-run `./gradlew installGitHooks` and verify with the command above.
+- **The push is not blocked and no formatting check runs.** `core.hooksPath` is probably unset or pointing at the wrong directory. Rerun `./gradlew installGitHooks` and verify with the command above.
 - **The `installGitHooks` task is not found.** Run the command from the repository root, and make sure you are using the Gradle wrapper (`./gradlew`) rather than a system Gradle install.
 - **The formatting check itself errors out.** This is usually a Java version mismatch. Confirm Java 25 is active with `java -version`.
 - **A global hooks path overrides the project one.** If you previously set `core.hooksPath` globally, that value can take precedence. Check with `git config --global --get core.hooksPath` and unset it if needed.
