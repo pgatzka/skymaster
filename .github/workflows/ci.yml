@@ -110,7 +110,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
   ci-gate:
     name: CI Gate
-    needs: [ verify, build, build-image, publish-mod ]
+    needs: [ verify, build, build-image, publish-mod, zizmor ]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
