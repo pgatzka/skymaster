@@ -1,11 +1,9 @@
 [versions]
 mockito = "5.23.0"
-spring-boot = "4.0.7"
 
 [plugins]
 lombok = { id = "io.freefair.lombok", version = "9.5.0" }
-spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
-spring-boot-aot = { id = "org.springframework.boot.aot", version.ref = "spring-boot" }
+spring-boot = { id = "org.springframework.boot", version.ref = "4.0.7" }
 spring-dependencies = { id = "io.spring.dependency-management", version = "1.1.7" }
 springdoc = { id = "org.springdoc.openapi-gradle-plugin", version = "1.9.0" }
 openapi = { id = "org.openapi.generator", version = "7.24.0" }

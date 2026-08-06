@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.lombok)
     alias(libs.plugins.springdoc)
     alias(libs.plugins.spring.boot)
-    alias(libs.plugins.spring.boot.aot)
     alias(libs.plugins.spring.dependencies)
 }
 
@@ -34,16 +33,10 @@ tasks {
     withType<Test> {
         useJUnitPlatform()
     }
-    forkedSpringBootRun {
-        dependsOn(compileAotJava, processAotResources, processAot)
-    }
     jar {
         enabled = false
     }
     test {
-        jvmArgs("-javaagent:${mockitoAgent.asPath}", "-Xshare:off")
-    }
-    processTestAot {
         jvmArgs("-javaagent:${mockitoAgent.asPath}", "-Xshare:off")
     }
     check {

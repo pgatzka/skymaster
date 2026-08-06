@@ -19,4 +19,4 @@ COPY --from=builder /builder/extracted/application/ ./
 
 RUN java -XX:AOTCacheOutput=app.aot -Dspring.context.exit=onRefresh -jar application.jar
 
-ENTRYPOINT ["java", "-XX:AOTCache=app.aot", "-Dspring.aot.enabled=true", "-jar", "application.jar"]
+ENTRYPOINT ["java", "-XX:AOTCache=app.aot", "-jar", "application.jar"]
