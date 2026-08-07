@@ -113,6 +113,8 @@ jobs:
     needs: [ verify, build, build-image, publish-mod ]
     if: ${{ always() }}
     runs-on: ubuntu-latest
+    env:
+      HAS_WEBHOOK_URL: ${{ secrets.WEBHOOK_URL != '' }}
     steps:
       - name: Verify Dependencies Succeeded
         if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
