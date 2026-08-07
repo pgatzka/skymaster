@@ -179,3 +179,15 @@ jobs:
           github-token: ""
           modrinth-featured: false
           version: ${{ steps.version.outputs.version }}
+  notify-on-failure:
+    runs-on: ubuntu-latest
+    env:
+      HAS_WEBHOOK_URL: ${{ secrets.WEBHOOK_URL != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Notify on failure
+        if: failure() && env.HAS_WEBHOOK_URL == 'true'
+        uses: ./.github/actions/notify-discord
+        with:
+          webhook-url: ${{ secrets.WEBHOOK_URL }}
