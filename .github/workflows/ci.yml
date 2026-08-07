@@ -116,6 +116,8 @@ jobs:
     env:
       HAS_WEBHOOK_URL: ${{ secrets.WEBHOOK_URL != '' }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
       - name: Verify Dependencies Succeeded
         if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
         run: |
