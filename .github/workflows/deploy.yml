@@ -41,6 +41,8 @@ jobs:
     concurrency:
       group: deploy-${{ inputs.environment }}
       cancel-in-progress: false
+    env:
+      HAS_WEBHOOK_URL: ${{ secrets.WEBHOOK_URL != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7

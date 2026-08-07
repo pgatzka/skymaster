@@ -48,9 +48,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew :skymaster-server:sonar -Dsonar.qualitygate.wait=true
       - name: Analyze mod
-        # if: env.HAS_SONAR_TOKEN == 'true'
-        # env:
-        #   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        if: env.HAS_SONAR_TOKEN == 'true'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew :skymaster-mod:sonar
       - name: Upload Server Jar
         uses: actions/upload-artifact@v7
