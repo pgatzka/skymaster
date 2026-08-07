@@ -79,3 +79,8 @@ jobs:
       - name: Log out of GHCR
         if: always()
         run: docker logout ghcr.io
+      - name: Notify on failure
+        if: failure() && env.HAS_WEBHOOK_URL == 'true'
+        uses: ./.github/actions/notify-discord
+        with:
+          webhook-url: ${{ secrets.WEBHOOK_URL }}
