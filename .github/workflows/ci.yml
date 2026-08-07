@@ -48,9 +48,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew :skymaster-server:sonar -Dsonar.qualitygate.wait=true
       - name: Analyze mod
-        if: env.HAS_SONAR_TOKEN == 'true'
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        # if: env.HAS_SONAR_TOKEN == 'true'
+        # env:
+        #   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew :skymaster-mod:sonar
       - name: Upload Server Jar
         uses: actions/upload-artifact@v7
@@ -187,7 +187,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Notify on failure
-        if: always() && env.HAS_WEBHOOK_URL == 'true'
+        if: failure() && env.HAS_WEBHOOK_URL == 'true'
         uses: ./.github/actions/notify-discord
         with:
           webhook-url: ${{ secrets.WEBHOOK_URL }}
