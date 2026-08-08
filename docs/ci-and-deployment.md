@@ -59,7 +59,10 @@ looks like a deployment problem rather than an application change. Keep it unaut
   against the `docs/` knowledge base rather than generic style advice. A review is always posted,
   in the fixed format specified in the workflow prompt: the linked issue's acceptance criteria as
   a checklist, blocking requested changes, non-blocking suggestions, and a verdict — findings
-  only, no praise. Skips drafts and bot-authored
+  only, no praise. The reviewer is read-only by construction: file-editing tools and git mutations
+  are disallowed in the workflow, so it cannot commit or push a fix even if asked to. A review can
+  also be started by hand from the Actions tab with a pull request number, for pull requests that
+  predate the workflow or never got a review. Skips drafts and bot-authored
   pull requests — a daily Dependabot bump does not need a conventions review. Deliberately absent
   from `ci-gate`'s `needs`; see the CI section for why. On fork pull requests the job no-ops:
   `pull_request` does not expose `CLAUDE_CODE_OAUTH_TOKEN` to forks, and that is the accepted trade
