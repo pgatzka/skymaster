@@ -56,7 +56,10 @@ looks like a deployment problem rather than an application change. Keep it unaut
 
 - **`dependency-review.yml`.** Reviews dependency changes on pull requests.
 - **`claude-review.yml`.** Posts an advisory Claude review on pull requests against `main`, judged
-  against the `docs/` knowledge base rather than generic style advice. Skips drafts and bot-authored
+  against the `docs/` knowledge base rather than generic style advice. A review is always posted,
+  in the fixed format specified in the workflow prompt: the linked issue's acceptance criteria as
+  a checklist, blocking requested changes, non-blocking suggestions, and a verdict — findings
+  only, no praise. Skips drafts and bot-authored
   pull requests — a daily Dependabot bump does not need a conventions review. Deliberately absent
   from `ci-gate`'s `needs`; see the CI section for why. On fork pull requests the job no-ops:
   `pull_request` does not expose `CLAUDE_CODE_OAUTH_TOKEN` to forks, and that is the accepted trade
