@@ -113,13 +113,22 @@ jobs:
     needs: [ verify, build, build-image, publish-mod ]
     if: ${{ always() }}
     runs-on: ubuntu-latest
+    env:
+      HAS_WEBHOOK_URL: ${{ secrets.WEBHOOK_URL != '' }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
       - name: Verify Dependencies Succeeded
         if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
         run: |
           echo "One or more jobs did not succeed:"
           echo '${{ toJSON(needs) }}'
           exit 1
+      - name: Notify on failure
+        if: failure() && env.HAS_WEBHOOK_URL == 'true'
+        uses: ./.github/actions/notify-discord
+        with:
+          webhook-url: ${{ secrets.WEBHOOK_URL }}
   deploy-ci:
     if: github.ref == 'refs/heads/main'
     permissions:
