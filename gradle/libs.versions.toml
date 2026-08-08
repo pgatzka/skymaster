@@ -12,7 +12,7 @@ openapi = { id = "org.openapi.generator", version = "7.24.0" }
 loom = { id = "net.fabricmc.fabric-loom", version = "1.17-SNAPSHOT" }
 
 [libraries]
-springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "3.0.2" }
+springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "3.1.0" }
 spring-boot-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc" }
 spring-boot-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test" }
 spring-boot-devtools = { group = "org.springframework.boot", name = "spring-boot-devtools" }
