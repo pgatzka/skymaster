@@ -12,6 +12,10 @@ code generation, CI and deployment, authentication, identity, and troubleshootin
 Open GitHub issues carry the rationale for settled future work. Check them before proposing a
 design.
 
+Maintainers can mention `@claude` on any issue or pull request to get an answer from the
+repository's Claude workflow, and pull requests receive an automatic advisory review; both are
+described in [`docs/ci-and-deployment.md`](docs/ci-and-deployment.md).
+
 ## Development
 
 ### Requirements
