@@ -18,7 +18,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Pinned by SHA because `@v5` is a branch, not a tag - this action stopped
       # publishing floating major tags after v3, so `@v5` is a mutable ref.
