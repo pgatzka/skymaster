@@ -13,7 +13,9 @@ Four jobs, on push to `main`, pull requests, and manual dispatch:
   only on `main`, tagged `sha-<short>` and `snapshot`.
 - **CI Gate.** A single required check that fails if any dependency failed or was cancelled. This is
   the job to protect the branch on; adding a new job means adding it to the gate's `needs`, or its
-  failures are invisible.
+  failures are invisible. The one exception is the Claude review (`claude-review.yml`): it is
+  advisory by design and deliberately outside the gate, because putting a model's judgement in
+  `needs` would turn advice into a merge blocker.
 
 `deploy-ci` then runs on `main`, calling the deploy workflow with the `snapshot` tag.
 
@@ -53,6 +55,16 @@ looks like a deployment problem rather than an application change. Keep it unaut
 ## Supporting workflows
 
 - **`dependency-review.yml`.** Reviews dependency changes on pull requests.
+- **`claude-review.yml`.** Posts an advisory Claude review on pull requests against `main`, judged
+  against the `docs/` knowledge base rather than generic style advice. Skips drafts and bot-authored
+  pull requests — a daily Dependabot bump does not need a conventions review. Deliberately absent
+  from `ci-gate`'s `needs`; see the CI section for why. On fork pull requests the job no-ops:
+  `pull_request` does not expose `CLAUDE_CODE_OAUTH_TOKEN` to forks, and that is the accepted trade
+  over `pull_request_target`, which would run fork code with the repository's secrets in scope.
+- **`claude.yml`.** Answers `@claude` mentions in issue comments, review comments and reviews, and
+  issues that mention `@claude` when opened or assigned. The job runs only when the author's
+  association is `OWNER`, `MEMBER` or `COLLABORATOR`, so a drive-by mention cannot spend the
+  project's budget. It comments only — `contents` stays read-only, so it never pushes.
 - **`pr-decorator.yml`.** Rewrites PR titles from the branch name and builds the body from the
   commit list. This is why branches are named for what they do.
 - **`dependabot.yml`.** Gradle daily, GitHub Actions weekly. The Actions entry exists specifically

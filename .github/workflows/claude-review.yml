@@ -1,0 +1,70 @@
+name: Claude Review
+
+run-name: >
+  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
+
+on:
+  pull_request:
+    types: [ opened, synchronize ]
+    branches: [ main ]
+
+# Keyed on the pull request number, not the ref, so rapid pushes to one PR
+# leave exactly one review run alive.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+# Escalated per job. Any permission left undeclared is set to `none`.
+permissions: { }
+
+jobs:
+  review:
+    name: Review
+    # Drafts are not ready for review; bot PRs (Dependabot above all) are
+    # version bumps that dependency-review.yml already covers.
+    if: ${{ !github.event.pull_request.draft && github.event.pull_request.user.type != 'Bot' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read # lets the review read the CI outcome for the same commit
+      # OIDC only: mints a token identifying this workflow so the action can
+      # exchange it for a Claude GitHub App token used to comment. Grants no
+      # repository access; contents stays read.
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Review Pull Request
+        uses: anthropics/claude-code-action@6b082c41935b4c8a3b8b0ef85ba4ba4d9eeb8975 # v1.0.189
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          use_sticky_comment: true
+          claude_args: --max-turns 30
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Review this pull request against this repository's own written rules.
+
+            First read docs/README.md. It is the index of the project knowledge base, one topic
+            per file. Follow its map to every topic file that covers the paths this pull request
+            changes, and read those files before judging anything. The project's conventions live
+            in those documents, not in this prompt.
+
+            Then review the diff. For each finding, say which of these it is:
+
+            - A convention violation: cite the document and the specific rule it breaks, for
+              example "docs/ci-and-deployment.md: a new CI job must be added to ci-gate's needs".
+            - A correctness bug: describe the concrete failure you expect and when it happens.
+
+            You are advisory. Report findings only: do not apply fixes, do not edit files, do not
+            push anything. If the CI run for this commit has finished, you may read its outcome
+            for context. If nothing is worth flagging, say so in one or two sentences instead of
+            inventing findings.
+
+            Deliver the review as your comment on the pull request: lead with a one-line verdict,
+            then the findings ordered by severity, each with a file and line reference.
