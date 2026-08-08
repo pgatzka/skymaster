@@ -91,7 +91,6 @@ openApi {
     customBootRun {
         args.set(
             listOf(
-                "--spring.docker.compose.file=${file("compose.yaml").absolutePath}",
                 "--server.port=$openApiGeneratePort",
                 "--springdoc.api-docs.enabled=true",
                 "--springdoc.swagger-ui.enabled=true",
