@@ -62,8 +62,8 @@ jobs:
           # tools and every git/gh mutation are disallowed outright. Denies
           # take precedence over allows.
           claude_args: |
-            --max-turns 30
-            --allowedTools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Bash(gh run view:*),Bash(gh run list:*)"
+            --max-turns 50
+            --allowedTools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr checks:*),Bash(gh issue view:*),Bash(gh run view:*),Bash(gh run list:*)"
             --disallowedTools "Edit,MultiEdit,Write,NotebookEdit,Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(git apply:*),Bash(git restore:*),Bash(git checkout:*),Bash(gh pr edit:*),Bash(gh pr merge:*),Bash(gh pr close:*)"
           prompt: |
             REPO: ${{ github.repository }}
