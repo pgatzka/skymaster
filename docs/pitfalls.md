@@ -26,7 +26,17 @@ depends on the result.
 **Cause:** the Spotless target was changed to derive from source sets. The mod's `main` source set
 includes the generated directory, so the check now depends on codegen, which boots the server.
 
-**Fix:** keep `target("src/**/*.java")` literal in `buildSrc/.../java-module.gradle.kts`.
+**Fix:** keep `target("src/**/*.java")` literal in the `spotless` block of each module's
+`build.gradle.kts`.
+
+### A build setting applies to one module but not the other
+
+**Cause:** there is no convention plugin. The toolchain, Spotless, JaCoCo, Sonar and the Mockito agent
+are declared separately in `skymaster-server/build.gradle.kts` and `skymaster-mod/build.gradle.kts`,
+so a change made in one file silently leaves the other behind.
+
+**Fix:** apply shared build changes to both files. See
+[build-and-codegen.md](build-and-codegen.md).
 
 ### Push rejected by the formatting hook
 
