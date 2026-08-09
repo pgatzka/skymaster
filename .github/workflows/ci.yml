@@ -125,10 +125,10 @@ jobs:
           echo '${{ toJSON(needs) }}'
           exit 1
       - name: Notify on failure
-        if: failure() && env.HAS_WEBHOOK_URL == 'true'
+        if: failure() && env.HAS_WEBHOOK_URL == 'true' && github.ref == 'refs/heads/main'
         uses: ./.github/actions/notify-discord
         with:
-          webhook-url: ${{ secrets.WEBHOOK_URL }}
+          webhook-url: ${{ secrets.DISCORD_CI_WEBHOOK_URL }}
   deploy-ci:
     if: github.ref == 'refs/heads/main'
     permissions:

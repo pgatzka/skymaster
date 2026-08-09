@@ -85,4 +85,5 @@ jobs:
         if: failure() && env.HAS_WEBHOOK_URL == 'true'
         uses: ./.github/actions/notify-discord
         with:
-          webhook-url: ${{ secrets.WEBHOOK_URL }}
+          webhook-url: ${{ secrets.DISCORD_CI_WEBHOOK_URL }}
+          message: 'Deploy to ${{ inputs.environment }} failed'
