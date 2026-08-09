@@ -1,0 +1,25 @@
+name: Notify webhook on failure
+description: Sends a failure message with ref and run URL to a webhook
+
+inputs:
+  webhook-url:
+    description: Webhook URL (pass from secrets)
+    required: true
+  message:
+    description: Optional custom message prefix
+    required: false
+    default: CI failed
+
+runs:
+  using: composite
+  steps:
+    - name: Send notification
+      shell: bash
+      env:
+        WEBHOOK: ${{ inputs.webhook-url }}
+        MSG: ${{ inputs.message }}
+        REF: ${{ github.ref_name }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: |
+        payload=$(jq -n --arg msg "$MSG" --arg ref "$REF" --arg url "$RUN_URL" '{content: ($msg + " on `" + $ref + "` — <" + $url + ">")}')
+        curl --fail --silent --show-error --max-time 10 -H "Content-Type: application/json" -d "$payload" "$webhook"

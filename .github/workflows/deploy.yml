@@ -41,9 +41,13 @@ jobs:
     concurrency:
       group: deploy-${{ inputs.environment }}
       cancel-in-progress: false
+    env:
+      HAS_WEBHOOK_URL: ${{ secrets.WEBHOOK_URL != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
       - name: Deploy
@@ -79,3 +83,9 @@ jobs:
       - name: Log out of GHCR
         if: always()
         run: docker logout ghcr.io
+      - name: Notify on failure
+        if: failure() && env.HAS_WEBHOOK_URL == 'true'
+        uses: ./.github/actions/notify-discord
+        with:
+          webhook-url: ${{ secrets.DISCORD_CI_WEBHOOK_URL }}
+          message: 'Deploy to ${{ inputs.environment }} failed'
