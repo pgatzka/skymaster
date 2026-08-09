@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.util.function.LongSupplier;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 
 public class HandshakeService {
@@ -147,9 +146,9 @@ public class HandshakeService {
     }
 
     private static void sendChatMessage(String message) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null) {
-            player.displayClientMessage(Component.literal(message), false);
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player != null) {
+            minecraft.gui.getChat().addClientSystemMessage(Component.literal(message));
         }
     }
 

@@ -43,13 +43,11 @@ dependencies {
     implementation(libs.spring.boot.webmvc)
     implementation(libs.springdoc)
 
-    // The generated Hypixel client uses Jackson 2 (com.fasterxml), which does not
-    // come with Spring Boot 4's Jackson 3 (tools.jackson) starters.
-    implementation(platform(libs.jackson.bom))
-    implementation(libs.jackson.core)
+    // The generated Hypixel client runs on Spring Boot 4's Jackson 3
+    // (tools.jackson) starters. Only the annotations keep their Jackson 2
+    // coordinates - Jackson 3 still reads com.fasterxml.jackson.annotation,
+    // and Boot's dependency management supplies the version.
     implementation(libs.jackson.annotations)
-    implementation(libs.jackson.databind)
-    implementation(libs.jackson.jsr310)
     implementation(libs.jakarta.annotations)
 
     developmentOnly(libs.spring.boot.devtools)
@@ -100,7 +98,13 @@ tasks {
         configOptions.set(
             mapOf(
                 "useJakartaEe" to "true",
-                "openApiNullable" to "false"
+                "openApiNullable" to "false",
+                // Generate for the stack this server actually runs: Spring 7's
+                // RestClient and Jackson 3. Without these the generator emits a
+                // Spring 6/Jackson 2 client, which drags in a parallel Jackson 2
+                // and uses converters deprecated for removal in Spring 7.
+                "useSpringBoot4" to "true",
+                "useJackson3" to "true"
             )
         )
     }
