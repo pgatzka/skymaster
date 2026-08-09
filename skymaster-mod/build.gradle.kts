@@ -141,9 +141,7 @@ tasks {
         jvmArgs("-javaagent:${mockitoAgent.asPath}", "-Xshare:off")
         finalizedBy(jacocoTestReport)
         testLogging {
-            testLogging {
-                events("passed", "skipped", "failed")
-            }
+            events("passed", "skipped", "failed")
         }
         useJUnitPlatform()
     }

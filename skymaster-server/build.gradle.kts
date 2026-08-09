@@ -56,9 +56,7 @@ tasks {
         useJUnitPlatform()
         finalizedBy(jacocoTestReport)
         testLogging {
-            testLogging {
-                events("passed", "skipped", "failed")
-            }
+            events("passed", "skipped", "failed")
         }
     }
     compileJava {
