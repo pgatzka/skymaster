@@ -1,11 +1,27 @@
 import kotlin.random.Random
 
 plugins {
-    id("java-module")
+    id("java")
+    id("jacoco")
+    alias(libs.plugins.sonar)
+    alias(libs.plugins.spotless)
     alias(libs.plugins.lombok)
     alias(libs.plugins.springdoc)
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependencies)
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+spotless {
+    java {
+        target("src/**/*.java")
+        palantirJavaFormat()
+    }
 }
 
 val mockitoAgent = configurations.create("mockitoAgent")
@@ -29,18 +45,39 @@ springBoot {
     buildInfo()
 }
 
+val jacocoXmlReport = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
+
 tasks {
-    withType<Test> {
-        useJUnitPlatform()
-    }
     jar {
         enabled = false
     }
     test {
         jvmArgs("-javaagent:${mockitoAgent.asPath}", "-Xshare:off")
+        useJUnitPlatform()
+        finalizedBy(jacocoTestReport)
+        testLogging {
+            testLogging {
+                events("passed", "skipped", "failed")
+            }
+        }
+    }
+    compileJava {
+        options.release.set(25)
     }
     check {
         dependsOn(jacocoTestCoverageVerification)
+    }
+    jacocoTestReport {
+        dependsOn(test)
+        reports {
+            xml.required = true
+            html.required = true
+        }
+        classDirectories.setFrom(files(classDirectories.files.map {
+            fileTree(it) {
+                exclude("**/generated/**")
+            }
+        }))
     }
     jacocoTestCoverageVerification {
         classDirectories.setFrom(files(classDirectories.files.map {
@@ -101,5 +138,13 @@ val openApiSpec = configurations.create("openApiSpec") {
 artifacts {
     add("openApiSpec", layout.buildDirectory.file("openApi/spec.json")) {
         builtBy(tasks.generateOpenApiDocs)
+    }
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "io.github.pgatzka:skymaster-server")
+        property("sonar.organization", "pgatzka")
+        property("sonar.coverage.jacoco.xmlReportPaths", jacocoXmlReport.get().asFile.path)
     }
 }

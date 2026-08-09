@@ -1,8 +1,11 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-    id("java-module")
+    id("java")
+    id("jacoco")
     id("maven-publish")
+    alias(libs.plugins.sonar)
+    alias(libs.plugins.spotless)
     alias(libs.plugins.lombok)
     alias(libs.plugins.loom)
     alias(libs.plugins.openapi)
@@ -25,6 +28,16 @@ val openApiSpec = configurations.create("openApiSpec") {
 
 java {
     withSourcesJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+spotless {
+    java {
+        target("src/**/*.java")
+        palantirJavaFormat()
+    }
 }
 
 repositories {
@@ -108,6 +121,8 @@ publishing {
     }
 }
 
+val jacocoXmlReport = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml")
+
 tasks {
     processResources {
         inputs.property("version", project.version)
@@ -124,6 +139,13 @@ tasks {
     }
     test {
         jvmArgs("-javaagent:${mockitoAgent.asPath}", "-Xshare:off")
+        finalizedBy(jacocoTestReport)
+        testLogging {
+            testLogging {
+                events("passed", "skipped", "failed")
+            }
+        }
+        useJUnitPlatform()
     }
     openApiValidate.configure {
         inputSpec.set(layout.file(providers.provider { openApiSpec.incoming.files.singleFile }))
@@ -152,13 +174,27 @@ tasks {
     }
     compileJava {
         dependsOn(openApiGenerate)
+        options.release.set(25)
     }
     jacocoTestReport {
+        dependsOn(test)
+        reports {
+            xml.required = true
+            html.required = true
+        }
         classDirectories.from(
             files(sourceSets["client"].output).asFileTree.matching {
                 exclude("**/generated/**")
             }
         )
         sourceDirectories.from(files(sourceSets["client"].allSource.srcDirs))
+    }
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "io.github.pgatzka:skymaster-mod")
+        property("sonar.organization", "pgatzka")
+        property("sonar.coverage.jacoco.xmlReportPaths", jacocoXmlReport.get().asFile.path)
     }
 }
