@@ -12,9 +12,10 @@ permissions:
 
 jobs:
   decorate:
+    name: Decorate Pull Request
     runs-on: ubuntu-latest
     steps:
-      - name: Set title and description
+      - name: Set Title and Description
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
