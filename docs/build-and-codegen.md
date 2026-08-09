@@ -4,9 +4,14 @@ How the Gradle build is wired, and why the pieces are arranged the way they are.
 
 ## Structure
 
-- **`buildSrc/src/main/kotlin/java-module.gradle.kts`.** This is the convention plugin both modules apply.
-  Owns the Java 25 toolchain, Spotless, JaCoCo and Sonar. Change shared build behaviour here rather
-  than in a module.
+- **`skymaster-server/build.gradle.kts` and `skymaster-mod/build.gradle.kts`.** Each module configures
+  itself in full: the Java 25 toolchain, Spotless, JaCoCo, Sonar and the Mockito agent are declared in
+  both files. There is no convention plugin and no `buildSrc`. Shared build behaviour is duplicated on
+  purpose — two modules did not justify a plugin — so **a change to shared behaviour has to be made in
+  both files**, and a new module has to copy the same blocks.
+- **`build.gradle.kts` (root).** This holds only what is genuinely global: the `mavenCentral()`
+  repository for all projects, and the `installGitHooks` and `printVersion` tasks. It declares the
+  Spotless plugin with `apply false` so both modules resolve the same version from the catalog.
 - **`gradle/libs.versions.toml`.** This is the version catalog. Every dependency and plugin version lives
   here; Dependabot updates it. Inline coordinates in a module build file bypass that entirely.
 - **`settings.gradle.kts`.** This adds the FabricMC repository, needed to resolve Loom.
@@ -42,8 +47,8 @@ not assume generated code is excluded from Sonar analysis.
 
 ## Formatting
 
-Spotless with `palantirJavaFormat`, targeting `src/**/*.java` **literally** rather than deriving from
-source sets. This is deliberate and required. The mod's `main` source set includes the generated
+Spotless with `palantirJavaFormat`, configured in each module's `build.gradle.kts` and targeting
+`src/**/*.java` **literally** rather than deriving from source sets. This is deliberate and required. The mod's `main` source set includes the generated
 directory, so a source set derived target would make `spotlessCheck` depend on code generation,
 which boots the Spring application. That previously turned a formatting check into a long build.
 

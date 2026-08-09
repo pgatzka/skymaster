@@ -1,7 +1,5 @@
 /.gradle/
 /build/
-/buildSrc/.gradle/
-/buildSrc/build/
 /skymaster-mod/build/
 /skymaster-mod/logs/
 /skymaster-mod/run/
