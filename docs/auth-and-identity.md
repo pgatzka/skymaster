@@ -16,9 +16,11 @@ online player's UUID and submits data as them.
 
 ## Current state
 
-`HandshakeService` compares the mod's version against the server's build version and nothing else.
-Identity is entirely unverified, and version equality is exact. Every server release therefore rejects
-every deployed mod. Both are being replaced: identity by #31 and #33, the version rule by #39.
+`HandshakeService` compares the mod's version against the server's build version, then asks
+Hypixel's status endpoint whether the claimed UUID is online and in SkyBlock (#31), failing closed
+when Hypixel cannot be reached. Account ownership is still entirely unverified — the Hypixel check
+confirms that *someone* is online, not who is calling — and is tracked in #33. Version equality is
+exact, so every server release rejects every deployed mod; the version rule is replaced by #39.
 
 ## The design
 

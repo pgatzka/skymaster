@@ -1,0 +1,173 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Hypixel Public API",
+    "description": "Vendored subset of the official Hypixel Public API specification (https://api.hypixel.net), stripped to the /v2/status operation and the components it transitively needs. The only local addition is the operationId, which the official specification does not define; it is required for a usable generated method name.",
+    "version": "v2",
+    "termsOfService": "https://hypixel.net/tos",
+    "contact": {
+      "name": "Hypixel Support",
+      "url": "https://developer.hypixel.net"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.hypixel.net"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "API-Key",
+        "description": "Obtained via the [Hypixel Developer Dashboard](https://developer.hypixel.net) when creating an application. You can also request higher limits for production applications in this dashboard."
+      }
+    },
+    "responses": {
+      "DataMissing": {
+        "description": "Some data is missing, this is usually a field.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "cause": {
+                  "type": "string",
+                  "example": "Missing one or more fields [...]"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InvalidKey": {
+        "description": "Access is forbidden, usually due to an invalid API key being used.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "cause": {
+                  "type": "string",
+                  "example": "Invalid API key"
+                }
+              }
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "A request limit has been reached, usually this is due to the limit on the key being reached but can also be triggered by a global throttle.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "cause": {
+                  "type": "string",
+                  "example": "Key throttle"
+                },
+                "throttle": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "global": {
+                  "type": "boolean",
+                  "description": "When this boolean exists and is true, the throttle occurring is a global throttle applied to all users",
+                  "example": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/v2/status": {
+      "get": {
+        "summary": "The current online status of a specific player",
+        "operationId": "getPlayerStatus",
+        "tags": [
+          "Player Data"
+        ],
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "uuid",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get player status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "uuid": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "ad8fefaa8351454bb739a4eaa872173f"
+                    },
+                    "session": {
+                      "type": "object",
+                      "properties": {
+                        "online": {
+                          "type": "boolean"
+                        },
+                        "gameType": {
+                          "type": "string"
+                        },
+                        "mode": {
+                          "type": "string"
+                        },
+                        "map": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/DataMissing"
+          },
+          "403": {
+            "$ref": "#/components/responses/InvalidKey"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          }
+        }
+      }
+    }
+  }
+}

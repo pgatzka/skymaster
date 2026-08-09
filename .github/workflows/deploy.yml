@@ -80,6 +80,9 @@ jobs:
           HEALTH_TIMEOUT: ${{ vars.HEALTH_TIMEOUT }}
           # Seconds between health-status polls.
           HEALTH_INTERVAL: ${{ vars.HEALTH_INTERVAL }}
+          # Hypixel API key for handshake verification; interpolated into the
+          # compose file's environment block by docker compose.
+          HYPIXEL_API_KEY: ${{ secrets.HYPIXEL_API_KEY }}
         run: .github/scripts/deploy.sh
       - name: Log out of GHCR
         if: always()

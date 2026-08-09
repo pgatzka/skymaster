@@ -5,6 +5,8 @@ services:
     image: ${APP_IMAGE}
     ports:
       - '${HOST_PORT}:8080'
+    environment:
+      HYPIXEL_API_KEY: ${HYPIXEL_API_KEY}
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
       interval: 10s

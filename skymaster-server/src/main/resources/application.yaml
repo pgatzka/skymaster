@@ -11,3 +11,11 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+skymaster:
+  hypixel:
+    # No default on purpose: a deployment without a key must fail at startup,
+    # not silently at the first verification.
+    api-key: ${HYPIXEL_API_KEY}
+    base-url: https://api.hypixel.net
+    connect-timeout: 3s
+    read-timeout: 5s

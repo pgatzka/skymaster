@@ -14,9 +14,13 @@ public class HandshakeService {
 
     private final BuildProperties buildProperties;
 
+    private final SkyBlockVerificationService skyBlockVerificationService;
+
     public void handshake(HandshakeRequest request) {
+        // Version first: a mismatched client is rejected without spending a Hypixel call.
         if (!request.version().equals(buildProperties.getVersion())) {
             throw new VersionMismatchException(request.version(), buildProperties.getVersion());
         }
+        skyBlockVerificationService.verifyInSkyBlock(request.uuid());
     }
 }

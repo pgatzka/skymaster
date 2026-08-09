@@ -76,13 +76,6 @@ release. Almost always `/actuator/health` became unreachable, slow, or authentic
 
 **Fix:** permit the springdoc paths in the filter chain.
 
-### A wrong HTTP method returns 500 instead of 405
-
-**Cause:** `RestExceptionHandler` handles `Exception.class` without extending
-`ResponseEntityExceptionHandler`, so Spring's own exceptions fall into the general exception handler.
-
-**Fix:** tracked in #31.
-
 ### Handshakes stop working for everyone after a server release
 
 **Cause:** the version check requires exact equality with the server's build version, and the mod

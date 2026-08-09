@@ -45,6 +45,13 @@ The generated sources land in a `generated` package on purpose. JaCoCo excludes
 `**/generated/**`. The repository does not configure an equivalent Sonar source exclusion, so do
 not assume generated code is excluded from Sonar analysis.
 
+The server has a second, much simpler generation step with no boot involved:
+`:skymaster-server:openApiGenerate` builds a client for the Hypixel status endpoint from the
+vendored spec at `skymaster-server/src/main/openapi/hypixel.json` into the same kind of
+`generated` package. Spec generation (`generateOpenApiDocs`) boots the application, which now
+requires the `skymaster.hypixel.api-key` property; `customBootRun` passes a dummy value so
+`./gradlew build` succeeds without `HYPIXEL_API_KEY` set. That boot never calls Hypixel.
+
 ## Formatting
 
 Spotless with `palantirJavaFormat`, configured in each module's `build.gradle.kts` and targeting
