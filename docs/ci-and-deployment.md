@@ -83,3 +83,7 @@ looks like a deployment problem rather than an application change. Keep it unaut
   tracked in #29.
 - Java setup and Gradle caching live in the composite action at
   `.github/actions/setup-environment`. Change provisioning there, not per workflow.
+- Every job and every step, in workflows and in composite actions, carries an explicit `name:` in
+  Title Case describing what it does (short articles and prepositions stay lowercase, as in
+  `Log in to GHCR`). The name is what the checks list and the run summary show, and a job id is
+  not a sentence.

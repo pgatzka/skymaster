@@ -1,4 +1,4 @@
-name: Notify webhook on failure
+name: Notify Webhook on Failure
 description: Sends a failure message with ref and run URL to a webhook
 
 inputs:
@@ -13,7 +13,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Send notification
+    - name: Send Notification
       shell: bash
       env:
         WEBHOOK: ${{ inputs.webhook-url }}
