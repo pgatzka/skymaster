@@ -1,0 +1,153 @@
+name: Claude Review
+
+run-name: >
+  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
+
+on:
+  pull_request:
+    types: [ opened, synchronize ]
+    branches: [ main ]
+  # Manual reviews for pull requests that predate this workflow or never
+  # received a review: no `opened`/`synchronize` event will fire for them.
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to review
+        required: true
+
+# Keyed on the pull request number, not the ref, so rapid pushes to one PR
+# leave exactly one review run alive.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: true
+
+# Escalated per job. Any permission left undeclared is set to `none`.
+permissions: { }
+
+jobs:
+  review:
+    name: Review
+    # Drafts are not ready for review; bot PRs (Dependabot above all) are
+    # version bumps that dependency-review.yml already covers. A manual
+    # dispatch is a deliberate request and skips neither check.
+    if: >
+      ${{ github.event_name == 'workflow_dispatch' ||
+          (!github.event.pull_request.draft && github.event.pull_request.user.type != 'Bot') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read # lets the review read the CI outcome for the same commit
+      # OIDC only: mints a token identifying this workflow so the action can
+      # exchange it for a Claude GitHub App token used to comment. Grants no
+      # repository access; contents stays read.
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Review Pull Request
+        uses: anthropics/claude-code-action@6b082c41935b4c8a3b8b0ef85ba4ba4d9eeb8975 # v1.0.189
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Progress tracking needs a pull request event; a dispatched run
+          # posts its review with `gh pr comment` instead.
+          track_progress: ${{ github.event_name == 'pull_request' }}
+          use_sticky_comment: true
+          # The review is read-only by construction, not by request: the
+          # prompt alone did not stop attempts to push a fix, so the editing
+          # tools and every git/gh mutation are disallowed outright. Denies
+          # take precedence over allows.
+          claude_args: |
+            --max-turns 30
+            --allowedTools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh issue view:*),Bash(gh run view:*),Bash(gh run list:*)"
+            --disallowedTools "Edit,MultiEdit,Write,NotebookEdit,Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(git apply:*),Bash(git restore:*),Bash(git checkout:*),Bash(gh pr edit:*),Bash(gh pr merge:*),Bash(gh pr close:*)"
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+
+            Review this pull request against this repository's own written rules.
+
+            First read docs/README.md. It is the index of the project knowledge base, one topic
+            per file. Follow its map to every topic file that covers the paths this pull request
+            changes, and read those files before judging anything. The project's conventions live
+            in those documents, not in this prompt.
+
+            Next find the issue this pull request implements: check the pull request body for an
+            issue reference, then the branch name (branches here carry the issue number as a
+            prefix). Read that issue and extract its acceptance criteria.
+
+            Then review the diff. Every finding is one of:
+
+            - A convention violation: cite the document and the specific rule it breaks, for
+              example "docs/ci-and-deployment.md: a new CI job must be added to ci-gate's needs".
+            - A correctness bug: describe the concrete failure you expect and when it happens.
+
+            You are advisory. Report findings only: do not apply fixes, do not edit files, do not
+            push anything. If the CI run for this commit has finished, you may read its outcome
+            for context.
+
+            Always post your review as a comment on the pull request, even when you have
+            nothing to flag. If you have a progress-tracking comment on the pull request,
+            put the review there; otherwise post it with `gh pr comment`. Write it to
+            exactly this specification:
+
+            Tone
+            - Word findings directly, short and strong. No hedging ("maybe", "perhaps", "you
+              might want to consider").
+            - Brevity must not lose content: every finding names the problem, the location
+              (file:line), and the fix.
+            - State facts, not opinions dressed as questions. "This leaks the password hash" -
+              not "Could this leak data?"
+
+            Structure, in this order:
+            1. Header - "## Code Review: <PR title> (#<PR number>)"
+            2. Summary - 1-2 sentences: state of the change and whether it can merge. Mention
+               unmet acceptance criteria if any.
+            3. Acceptance Criteria - always included.
+            4. Requested Changes - blocking findings. Omit the section entirely if there are
+               none.
+            5. Suggestions (non-blocking) - optional improvements. Omit if there are none.
+            6. Verdict - Approve / Request Changes.
+            An approving review with no findings collapses to: Header, Summary, Acceptance
+            Criteria, Verdict.
+
+            Acceptance Criteria
+            - Verify every acceptance criterion of the linked issue and list them all under
+              "### Acceptance Criteria (#<issue number>)" as a checklist: "[x]" met, "[ ]"
+              unmet.
+            - Every unmet criterion gets a corresponding entry in Requested Changes that
+              references it (e.g. "Fails AC 3"). Unmet acceptance criteria are always blocking.
+            - If no issue is linked, or the issue lists no acceptance criteria, keep the section
+              and state that instead of a checklist.
+
+            Requested Changes
+            - Section heading "### Requested Changes". Each change is its own "####" subheading
+              worded as an imperative instruction ("Move user login logic from rest layer to
+              service layer"), not a description of the problem.
+            - Under the subheading: a short description - why, the file:line reference, and the
+              AC reference if applicable.
+            - When the fix is a concrete line edit, follow the description with the exact edit:
+              the word "Change", a fenced code block with the old line(s), the word "Into", a
+              fenced code block with the suggested line(s). Omit the blocks only when the change
+              is structural and a snippet would misrepresent the scope.
+            - Order changes by severity, most severe on top.
+
+            Suggestions
+            - Section heading "### Suggestions (non-blocking)". Same format as Requested
+              Changes: imperative "####" subheading, short description, Change/Into blocks
+              where the edit is concrete.
+            - Suggestions never affect the verdict. A review containing only suggestions is an
+              Approve.
+
+            What not to include
+            - No positives, no praise, no "What Looks Good" section, no softening closers. If
+              something is fine, do not mention it.
+            - Do not restate the diff back to the author.
+
+            Verdict
+            - "**Request Changes**" if any Requested Changes entry exists or any acceptance
+              criterion is unmet. Name the blocking items and unmet ACs.
+            - "**Approve**" when there are no Requested Changes and all acceptance criteria are
+              met, regardless of Suggestions.

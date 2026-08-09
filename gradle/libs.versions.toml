@@ -1,18 +1,16 @@
 [versions]
 mockito = "5.23.0"
-spring-boot = "4.0.7"
 
 [plugins]
 lombok = { id = "io.freefair.lombok", version = "9.5.0" }
-spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
-spring-boot-aot = { id = "org.springframework.boot.aot", version.ref = "spring-boot" }
+spring-boot = { id = "org.springframework.boot", version = "4.0.7" }
 spring-dependencies = { id = "io.spring.dependency-management", version = "1.1.7" }
 springdoc = { id = "org.springdoc.openapi-gradle-plugin", version = "1.9.0" }
 openapi = { id = "org.openapi.generator", version = "7.24.0" }
 loom = { id = "net.fabricmc.fabric-loom", version = "1.17-SNAPSHOT" }
 
 [libraries]
-springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "3.0.2" }
+springdoc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "3.1.0" }
 spring-boot-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc" }
 spring-boot-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test" }
 spring-boot-devtools = { group = "org.springframework.boot", name = "spring-boot-devtools" }
