@@ -1,0 +1,2 @@
+[plugins]
+spotless = { id = "com.diffplug.gradle.spotless", version = "8.9.0" }
