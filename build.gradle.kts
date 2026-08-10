@@ -1,9 +1,8 @@
 plugins {
-    id("com.diffplug.spotless")
+    id("formatting-conventions")
 }
 
 spotless {
-
 }
 
 allprojects {

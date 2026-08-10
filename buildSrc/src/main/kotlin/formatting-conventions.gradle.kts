@@ -4,12 +4,12 @@ plugins {
 
 spotless {
     java {
-        target("**/*.java")
+        target("src/**/*.java")
         targetExclude("**/build/**")
         palantirJavaFormat()
     }
     kotlinGradle {
-        target("**/*.gradle.kts")
+        target("*.gradle.kts")
         ktlint()
     }
 }
