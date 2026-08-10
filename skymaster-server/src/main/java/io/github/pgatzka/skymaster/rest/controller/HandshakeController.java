@@ -24,6 +24,4 @@ public class HandshakeController {
         service.handshake(request);
         return ResponseEntity.ok().build();
     }
-
-
 }

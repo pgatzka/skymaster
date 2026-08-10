@@ -17,5 +17,4 @@ public class HandshakeControllerService {
             throw new VersionMismatchException(request.version(), buildProperties.getVersion());
         }
     }
-
 }

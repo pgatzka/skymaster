@@ -24,6 +24,18 @@ dependencies {
     mockitoAgent(libs.bundles.skymaster.server.mockito.agent) { isTransitive = false }
 }
 
+val coverageExclusions =
+    listOf(
+        "**/*Application*", // Spring Boot entrypoint
+    )
+
+fun filteredClasses(): FileCollection =
+    files(
+        sourceSets.main.get().output.classesDirs.map { dir ->
+            fileTree(dir) { exclude(coverageExclusions) }
+        },
+    )
+
 tasks {
     test {
         finalizedBy(jacocoTestReport)
@@ -36,6 +48,36 @@ tasks {
     jacocoTestReport {
         reports {
             xml.required.set(true)
+        }
+    }
+    check {
+        dependsOn(jacocoTestCoverageVerification)
+    }
+    jacocoTestCoverageVerification {
+        dependsOn(jacocoTestReport)
+        classDirectories.setFrom(filteredClasses())
+        violationRules {
+            rule {
+                element = "BUNDLE"
+                limit {
+                    counter = "LINE"
+                    value = "COVEREDRATIO"
+                    minimum = "0.80".toBigDecimal()
+                }
+                limit {
+                    counter = "BRANCH"
+                    value = "COVEREDRATIO"
+                    minimum = "0.70".toBigDecimal()
+                }
+            }
+            rule {
+                element = "CLASS"
+                limit {
+                    counter = "LINE"
+                    value = "COVEREDRATIO"
+                    minimum = "0.50".toBigDecimal()
+                }
+            }
         }
     }
 }

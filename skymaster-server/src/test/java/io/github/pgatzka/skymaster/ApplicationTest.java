@@ -1,6 +1,6 @@
 package io.github.pgatzka.skymaster;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +10,6 @@ public class ApplicationTest {
 
     @Test
     void contextLoads() {
-        assertTrue(true);
+        assertThat(true).isTrue();
     }
 }
