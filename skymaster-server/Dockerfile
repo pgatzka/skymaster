@@ -1,7 +1,7 @@
 FROM eclipse-temurin:25-jdk-alpine AS assembler
 WORKDIR /assembler
 
-ARG JAR_FILE=build/libs/*.jar
+ARG JAR_FILE=skymaster-server/build/libs/*.jar
 
 COPY ${JAR_FILE} application.jar
 
