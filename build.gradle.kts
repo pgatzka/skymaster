@@ -17,7 +17,7 @@ allprojects {
 }
 
 tasks {
-    register<JavaExec>("printVersion") {
+    register("printVersion") {
         group = "help"
         description = "Prints the project version to quiet"
         doLast {
