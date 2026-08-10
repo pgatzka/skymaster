@@ -1,0 +1,241 @@
+name: CI
+run-name: |
+  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+concurrency:
+  group: ${{ github.workflow}}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          cache: gradle
+          java-version: 25
+          distribution: temurin
+      - name: Check formatting
+        run: |
+          ./gradlewspotless:check
+      - name: Check workflows
+        uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          cache: gradle
+          java-version: 25
+          distribution: temurin
+      - name: Run tests
+        run: |
+          ./gradlewtest
+      - name: Verify coverage
+        run: |
+          ./gradlewjacoco:check
+      - name: Generate coverage report
+        run: |
+          ./gradlewjacoco:report
+      - name: Upload coverage report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage-report
+          path: target/site/jacoco
+      # TODO: report coverage to PR
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          cache: gradle
+          java-version: 25
+          distribution: temurin
+      - name: Download coverage report
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: coverage-report
+          path: target/site/jacoco
+      - name: Cache SonarQube packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Run sonar analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          ./gradlewsonar:sonar -Dsonar.qualitygate.wait=true
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup JDK
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          cache: gradle
+          java-version: 25
+          distribution: temurin
+      - name: Build JAR
+        run: |
+          ./gradlewpackage -Dgradle.test.skip=true
+      - name: Upload JAR
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: jar
+          path: target/*.jar
+      - name: Set version
+        id: set-version
+        run: |
+          VERSION=$(./gradlew-q help:evaluate -Dexpression=project.version -DforceStdout | tail -1)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: ghcr.io/${{ github.repository_owner }}/skymaster-server
+      VERSION_TAG: ghcr.io/${{ github.repository_owner }}/skymaster-server:${{ needs.build.outputs.version }}
+      TYPE_TAG: ghcr.io/${{ github.repository_owner }}/skymaster-server:${{ startsWith(github.ref, 'refs/tags/') && 'latest' || 'snapshot' }}
+      SHA_TAG: ghcr.io/${{ github.repository_owner }}/skymaster-server:${{ github.event.pull_request.head.sha || github.sha }}
+    needs:
+      - build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download JAR
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: jar
+          path: target
+      - name: Setup docker
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+      - name: Reports tags
+        run: |
+          echo Tagging image with
+          echo - ${{ env.VERSION_TAG }}
+          echo - ${{ env.TYPE_TAG }}
+          echo - ${{ env.SHA_TAG }}
+      - name: Build docker image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: .
+          push: false
+          tags: |
+            ${{ env.VERSION_TAG }}
+            ${{ env.TYPE_TAG }}
+            ${{ env.SHA_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          outputs: type=docker,dest=/tmp/image.tar
+      - name: Upload Image
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: image
+          path: /tmp/image.tar
+  pr-gate:
+    name: PR Gate
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - verify
+      - test
+      - lint
+      - build
+      - package
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check PR gate
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: |
+          echo "One or more jobs did not succeed:"
+          echo '${{ toJSON(needs) }}'
+          exit 1
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - verify
+      - test
+      - lint
+      - build
+      - package
+    permissions:
+      packages: write
+    env:
+      IMAGE: ghcr.io/${{ github.repository_owner }}/skymaster-server
+    steps:
+      - name: Download image
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: image
+          path: /tmp
+      - name: Login
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Load image
+        run: docker load -i /tmp/image.tar
+      - name: Push image
+        run: docker push --all-tags "${{ env.IMAGE }}"
+  deploy:
+    name: Deploy
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    needs:
+      - verify
+      - test
+      - lint
+      - build
+      - package
+      - publish
+    uses: .github/workflows/deploy.yaml
+    with:
+      image_tag: ${{ startsWith(github.ref, 'refs/tags/') && 'latest' || 'snapshot' }}
+      environment: ${{ startsWith(github.ref, 'refs/tags/') && 'production' || 'staging' }}
+    secrets: inherit

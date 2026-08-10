@@ -1,8 +1,9 @@
+---
 spring:
   application:
-    name: skymaster-server
+    name: "skymaster-server"
   main:
-    banner-mode: off
+    banner-mode: false
 springdoc:
   api-docs:
     enabled: false

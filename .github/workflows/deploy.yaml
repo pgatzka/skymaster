@@ -1,0 +1,66 @@
+---
+name: "Deploy"
+run-name: "${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name\
+  \ }} by @${{ github.actor }} on ${{ inputs.environment }}\n"
+"on":
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag to deploy"
+        type: "string"
+        required: true
+      environment:
+        description: "Target environment"
+        type: "choice"
+        required: true
+        options:
+        - "ci"
+        - "production"
+  workflow_call:
+    inputs:
+      image_tag:
+        description: "Image tag to deploy"
+        type: "string"
+        required: true
+      environment:
+        description: "Target environment"
+        type: "string"
+        required: true
+permissions:
+  contents: "read"
+  packages: "read"
+jobs:
+  deploy:
+    name: "Deploy"
+    runs-on:
+    - "self-hosted"
+    - "skymaster-server-${{ inputs.environment }}"
+    environment: "${{ inputs.environment }}"
+    concurrency:
+      group: "${{ github.workflow }}-${{ inputs.environment }}"
+      cancel-in-progress: false
+    steps:
+    - name: "Checkout"
+      uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+      with:
+        persist-credentials: false
+    - name: "Login"
+      uses: "docker/login-action@dbcb813823bdd20940b903addbd779551569679f"
+      with:
+        registry: "ghcr.io"
+        username: "${{ github.actor }}"
+        password: "${{ secrets.GITHUB_TOKEN }}"
+    - name: "Deploy"
+      env:
+        IMAGE_NAME: "ghcr.io/${{ github.repository }}"
+        IMAGE_TAG: "${{ inputs.image_tag }}"
+        COMPOSE_PROJECT_NAME: "${{ vars.COMPOSE_PROJECT_NAME }}"
+        DEPLOYMENT_DIRECTORY: "${{ vars.DEPLOYMENT_DIRECTORY }}"
+        COMPOSE_FILE: ".github/deployment/docker-compose.${{ inputs.environment }}.yaml"
+        SERVICES: "application"
+        TRIGGER_SHA: "${{ github.sha }}"
+        DEBUG: false
+        ENV_APPLICATION_PORT: "${{ vars.ENV_APPLICATION_PORT }}"
+        ENV_APPLICATION_USER_ID: "${{ vars.ENV_APPLICATION_USER_ID }}"
+        ENV_APPLICATION_GROUP_ID: "${{ vars.ENV_APPLICATION_GROUP_ID }}"
+      run: ".github/scripts/deploy.sh"

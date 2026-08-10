@@ -1,0 +1,23 @@
+name: PR decorator
+run-name: >
+  ${{ github.workflow }}: ${{ github.event_name }} for ${{ github.ref_name }} by @${{ github.actor }}
+on:
+  pull_request:
+    types:
+    - opened
+    - reopened
+    - synchronize
+    - ready_for_review
+permissions:
+  pull-requests: write
+concurrency:
+  group: ${{ github.workflow}}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  decorate:
+    name: Decorate
+    runs-on: ubuntu-latest
+    steps:
+    - uses: pgatzka/pr-decorator@f54b4f781360ed1dcb1918abbfb6cd1abf3ad5ab # v1.0.0
+      with:
+        timezone: Europe/Zurich
