@@ -1,7 +1,3 @@
-/.gradle/
-/build/
-/skymaster-mod/build/
-/skymaster-mod/logs/
-/skymaster-mod/run/
-/skymaster-server/build/
-/AGENTS.md
+/.idea/
+/backup/
+/skymaster.iml
