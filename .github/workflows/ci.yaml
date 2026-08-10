@@ -229,7 +229,7 @@ jobs:
       - build
       - package
       - publish
-    uses: .github/workflows/deploy.yaml
+    uses: ./.github/workflows/deploy.yaml
     with:
       image_tag: ${{ startsWith(github.ref, 'refs/tags/') && 'latest' || 'snapshot' }}
       environment: ${{ startsWith(github.ref, 'refs/tags/') && 'production' || 'staging' }}
