@@ -34,7 +34,7 @@ jobs:
           distribution: temurin
       - name: Check formatting
         run: |
-          ./gradlew --info spotlessCheck
+          ./gradlew spotlessCheck
       - name: Check workflows
         uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
   test:
@@ -53,7 +53,7 @@ jobs:
           distribution: temurin
       - name: Run tests
         run: |
-          ./gradlew --info test
+          ./gradlew test
       - name: Upload coverage report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -92,7 +92,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          ./gradlew --info sonar
+          ./gradlew sonar
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -111,7 +111,7 @@ jobs:
           distribution: temurin
       - name: Build JAR
         run: |
-          ./gradlew --info build -x test
+          ./gradlew build -x test
       - name: Upload JAR
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -121,7 +121,7 @@ jobs:
         id: set-version
         run: |
           set -euo pipefail
-          base_version=$(./gradlew --info -q printVersion | tail -n 1)
+          base_version=$(./gradlew -q printVersion | tail -n 1)
           printf 'version=%s-%s\n' "$base_version" "${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
   package:
     name: Package
