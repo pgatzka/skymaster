@@ -1,8 +1,13 @@
 plugins {
     id("formatting-conventions")
+    alias(libs.plugins.org.sonarqube)
 }
 
-spotless {
+sonar {
+    properties {
+        property("sonar.projectKey", "io.github.pgatzka:skymaster")
+        property("sonar.organization", "pgatzka")
+    }
 }
 
 allprojects {

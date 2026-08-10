@@ -1,2 +1,25 @@
 [plugins]
-spotless = { id = "com.diffplug.gradle.spotless", version = "8.9.0" }
+com-diffplug-gradle-spotless = { id = "com.diffplug.gradle.spotless", version = "8.9.0" }
+io-freefair-lombok = { id = "io.freefair.lombok", version = "9.5.0" }
+io-spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+org-sonarqube = { id = "org.sonarqube", version = "7.4.0.8496" }
+org-springframework-boot = { id = "org.springframework.boot", version = "4.0.7" }
+
+[libraries]
+io-micrometer-micrometer-registry-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus" }
+org-junit-platform-junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
+org-mockito-mockito-core = { group = "org.mockito", name = "mockito-core", version = "5.20.0"}
+org-springdoc-springdoc-openapi-starter-webmvc-ui = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version = "3.0.2" }
+org-springframework-boot-spring-boot-starter-actuator = { group = "org.springframework.boot", name = "spring-boot-starter-actuator" }
+org-springframework-boot-spring-boot-starter-actuator-test = { group = "org.springframework.boot", name = "spring-boot-starter-actuator-test" }
+org-springframework-boot-spring-boot-starter-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc" }
+org-springframework-boot-spring-boot-starter-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test" }
+org-springframework-boot-spring-boot-devtools = { group = "org.springframework.boot", name = "spring-boot-devtools" }
+
+[bundles]
+skymaster-server-development-only = ["org-springframework-boot-spring-boot-devtools"]
+skymaster-server-implementation = ["org-springframework-boot-spring-boot-starter-actuator", "org-springframework-boot-spring-boot-starter-webmvc", "org-springdoc-springdoc-openapi-starter-webmvc-ui", ]
+skymaster-server-runtime-only = ["io-micrometer-micrometer-registry-prometheus"]
+skymaster-server-test-implementation = ["org-springframework-boot-spring-boot-starter-actuator-test", "org-springframework-boot-spring-boot-starter-webmvc-test", ]
+skymaster-server-test-runtime-only = ["org-junit-platform-junit-platform-launcher"]
+skymaster-server-mockito-agent = ["org-mockito-mockito-core"]

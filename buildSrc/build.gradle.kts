@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.plugins.spotless.map {
+    implementation(libs.plugins.com.diffplug.gradle.spotless.map {
         "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version}"
     })
 }

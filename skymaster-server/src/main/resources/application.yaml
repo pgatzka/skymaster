@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: skymaster-server
+  main:
+    banner-mode: off
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
