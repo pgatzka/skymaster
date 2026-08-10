@@ -15,3 +15,13 @@ allprojects {
         mavenCentral()
     }
 }
+
+tasks {
+    register<JavaExec>("printVersion") {
+        group = "help"
+        description = "Prints the project version to quiet"
+        doLast {
+            logger.quiet(version.toString())
+        }
+    }
+}

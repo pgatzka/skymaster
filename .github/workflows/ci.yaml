@@ -34,7 +34,7 @@ jobs:
           distribution: temurin
       - name: Check formatting
         run: |
-          ./gradlewspotless:check
+          ./gradlew spotlessCheck
       - name: Check workflows
         uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
   test:
@@ -53,18 +53,12 @@ jobs:
           distribution: temurin
       - name: Run tests
         run: |
-          ./gradlewtest
-      - name: Verify coverage
-        run: |
-          ./gradlewjacoco:check
-      - name: Generate coverage report
-        run: |
-          ./gradlewjacoco:report
+          ./gradlew test
       - name: Upload coverage report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: coverage-report
-          path: target/site/jacoco
+          path: skymaster-server/build/reports/jacoco
       # TODO: report coverage to PR
   lint:
     name: Lint
@@ -87,7 +81,7 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: coverage-report
-          path: target/site/jacoco
+          path: skymaster-server/build/reports/jacoco
       - name: Cache SonarQube packages
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -98,7 +92,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          ./gradlewsonar:sonar -Dsonar.qualitygate.wait=true
+          ./gradlew sonar
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -117,17 +111,18 @@ jobs:
           distribution: temurin
       - name: Build JAR
         run: |
-          ./gradlewpackage -Dgradle.test.skip=true
+          ./gradlew build -x test
       - name: Upload JAR
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: jar
-          path: target/*.jar
+          path: skymaster-server/libs/*.jar
       - name: Set version
         id: set-version
         run: |
-          VERSION=$(./gradlew-q help:evaluate -Dexpression=project.version -DforceStdout | tail -1)
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          base_version=$(./gradlew -q printVersion | tail -n 1)
+          printf 'version=%s-%s\n' "$base_version" "${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
   package:
     name: Package
     runs-on: ubuntu-latest
@@ -159,7 +154,7 @@ jobs:
       - name: Build docker image
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
-          context: .
+          context: skymaster-server
           push: false
           tags: |
             ${{ env.VERSION_TAG }}
