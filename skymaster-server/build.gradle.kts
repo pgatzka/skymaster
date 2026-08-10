@@ -4,6 +4,7 @@ plugins {
     id("formatting-conventions")
     alias(libs.plugins.io.freefair.lombok)
     alias(libs.plugins.io.spring.dependency.management)
+    alias(libs.plugins.org.springdoc.openapi.gradle.plugin)
     alias(libs.plugins.org.springframework.boot)
 }
 
@@ -81,6 +82,27 @@ tasks {
                 }
             }
         }
+    }
+}
+
+openApi {
+    outputDir.set(layout.buildDirectory.dir("openApi"))
+    outputFileName.set("spec.json")
+    apiDocsUrl.set(apiDocsUrl.get().replace("8080", "6969"))
+    customBootRun {
+        args.set(listOf("--spring.profiles.active=openapi"))
+    }
+}
+
+val openApiSpec =
+    configurations.create("openApiSpec") {
+        isCanBeConsumed = true
+        isCanBeResolved = false
+    }
+
+artifacts {
+    add("openApiSpec", layout.buildDirectory.file("openApi/spec.json")) {
+        builtBy(tasks.generateOpenApiDocs)
     }
 }
 

@@ -1,6 +1,11 @@
----
+
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
+server:
+  port: 6969
+logging:
+  level:
+    root: warn

@@ -2,8 +2,12 @@
 com-diffplug-gradle-spotless = { id = "com.diffplug.gradle.spotless", version = "8.9.0" }
 io-freefair-lombok = { id = "io.freefair.lombok", version = "9.5.0" }
 io-spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+org-openapi-generator = { id = "org.openapi.generator", version = "7.24.0" }
 org-sonarqube = { id = "org.sonarqube", version = "7.4.0.8496" }
+org-springdoc-openapi-gradle-plugin = { id = "org.springdoc.openapi-gradle-plugin", version = "1.9.0" }
 org-springframework-boot = { id = "org.springframework.boot", version = "4.0.7" }
+
+
 
 [libraries]
 io-micrometer-micrometer-registry-prometheus = { group = "io.micrometer", name = "micrometer-registry-prometheus" }
