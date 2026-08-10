@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if ! ./gradlew spotlessCheck -q; then
+    echo 1>&2 "spotless found problems, running spotlessApply; commit the result and re-push"
+    ./mvnw spotlessApply -q
+    exit 1
+fi
