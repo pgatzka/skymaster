@@ -1,3 +1,4 @@
+
 package io.github.pgatzka.skymaster.rest.request;
 
 import io.github.pgatzka.skymaster.test.RequestValidationTest;
@@ -24,13 +25,18 @@ class HandshakeRequestTest extends RequestValidationTest<HandshakeRequest> {
 
     private static Stream<Arguments> arguments() {
         return Stream.of(
-                Arguments.arguments(new HandshakeRequest(null, VALID_USERNAME, VALID_VERSION), null, "uuid", NotNull.class),
-                Arguments.arguments(new HandshakeRequest(VALID_UUID, null, VALID_VERSION), null, "username", NotBlank.class),
-                Arguments.arguments(new HandshakeRequest(VALID_UUID, "", VALID_VERSION), "", "username", NotBlank.class),
-                Arguments.arguments(new HandshakeRequest(VALID_UUID, VALID_USERNAME, null), null, "version", NotBlank.class),
-                Arguments.arguments(new HandshakeRequest(VALID_UUID, VALID_USERNAME, ""), "", "version", NotBlank.class),
-                Arguments.arguments(new HandshakeRequest(VALID_UUID, VALID_USERNAME, "invalid-version"), "invalid-version", "version", Pattern.class)
-        );
+                Arguments.arguments(new HandshakeRequest(null, VALID_USERNAME, VALID_VERSION), null, "uuid",
+                        NotNull.class),
+                Arguments.arguments(new HandshakeRequest(VALID_UUID, null, VALID_VERSION), null, "username",
+                        NotBlank.class),
+                Arguments.arguments(new HandshakeRequest(VALID_UUID, "", VALID_VERSION), "", "username",
+                        NotBlank.class),
+                Arguments.arguments(new HandshakeRequest(VALID_UUID, VALID_USERNAME, null), null, "version",
+                        NotBlank.class),
+                Arguments.arguments(new HandshakeRequest(VALID_UUID, VALID_USERNAME, ""), "", "version",
+                        NotBlank.class),
+                Arguments.arguments(new HandshakeRequest(VALID_UUID, VALID_USERNAME, "invalid-version"),
+                        "invalid-version", "version", Pattern.class));
     }
 
 }

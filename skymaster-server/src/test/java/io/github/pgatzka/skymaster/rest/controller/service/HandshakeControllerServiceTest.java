@@ -1,3 +1,4 @@
+
 package io.github.pgatzka.skymaster.rest.controller.service;
 
 import io.github.pgatzka.skymaster.rest.exception.VersionMismatchException;

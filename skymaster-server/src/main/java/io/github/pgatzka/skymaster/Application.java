@@ -1,3 +1,4 @@
+
 package io.github.pgatzka.skymaster;
 
 import org.springframework.boot.SpringApplication;
@@ -9,4 +10,5 @@ public class Application {
     static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
+
 }
