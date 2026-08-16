@@ -1,3 +1,4 @@
+
 package io.github.pgatzka.skymaster.rest.controller.service;
 
 import io.github.pgatzka.skymaster.rest.exception.VersionMismatchException;
@@ -13,8 +14,9 @@ public class HandshakeControllerService {
     private final BuildProperties buildProperties;
 
     public void perform(HandshakeRequest request) {
-        if(! request.version().equals(buildProperties.getVersion())) {
+        if (!request.version().equals(buildProperties.getVersion())) {
             throw new VersionMismatchException(request.version(), buildProperties.getVersion());
         }
     }
+
 }

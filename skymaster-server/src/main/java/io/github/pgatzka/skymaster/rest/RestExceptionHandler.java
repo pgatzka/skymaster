@@ -1,3 +1,4 @@
+
 package io.github.pgatzka.skymaster.rest;
 
 import org.springframework.http.ProblemDetail;

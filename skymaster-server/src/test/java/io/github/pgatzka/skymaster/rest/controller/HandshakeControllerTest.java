@@ -1,3 +1,4 @@
+
 package io.github.pgatzka.skymaster.rest.controller;
 
 import io.github.pgatzka.skymaster.rest.controller.service.HandshakeControllerService;
@@ -43,10 +44,8 @@ public class HandshakeControllerTest {
     @Test
     void test() throws Exception {
         HandshakeRequest request = new HandshakeRequest(VALID_UUID, VALID_USERNAME, VALID_VERSION);
-        mockMvc.perform(post("/rest/handshake/perform")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isNoContent())
+        mockMvc.perform(post("/rest/handshake/perform").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))).andExpect(status().isNoContent())
                 .andExpect(content().string(""));
 
         ArgumentCaptor<HandshakeRequest> captor = ArgumentCaptor.forClass(HandshakeRequest.class);
@@ -59,10 +58,8 @@ public class HandshakeControllerTest {
     @Test
     void returns400AndSkipsServiceWhenBodyIsInvalid() throws Exception {
         HandshakeRequest request = new HandshakeRequest(VALID_UUID, "", VALID_VERSION);
-        mockMvc.perform(post("/rest/handshake/perform")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
+        mockMvc.perform(post("/rest/handshake/perform").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))).andExpect(status().isBadRequest());
 
         verifyNoInteractions(service);
     }

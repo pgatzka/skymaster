@@ -1,3 +1,4 @@
+
 package io.github.pgatzka.skymaster.e2e;
 
 import io.github.pgatzka.skymaster.rest.request.HandshakeRequest;
@@ -33,10 +34,8 @@ public class HandshakeTest {
     @Test
     void handshakeReturnsNoContent() throws Exception {
         HandshakeRequest request = new HandshakeRequest(VALID_UUID, VALID_USERNAME, VALID_VERSION);
-        mockMvc.perform(post("/rest/handshake/perform")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isNoContent());
+        mockMvc.perform(post("/rest/handshake/perform").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))).andExpect(status().isNoContent());
     }
 
 }
