@@ -1,0 +1,26 @@
+[versions]
+
+[plugins]
+io-freefair-lombok = { id = "io.freefair.lombok", version = "9.5.0" }
+org-springframework-boot = { id = "org.springframework.boot", version = "4.1.0" }
+io-spring-dependency-management = { id = "io.spring.dependency-management", version = "1.1.7" }
+
+[libraries]
+org-springframework-boot-spring-boot-starter-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc" }
+org-springframework-boot-spring-boot-starter-validation = { group = "org.springframework.boot", name = "spring-boot-starter-validation" }
+org-springframework-boot-spring-boot-starter-webmvc-test = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc-test" }
+org-springframework-boot-spring-boot-starter-validation-test = { group = "org.springframework.boot", name = "spring-boot-starter-validation-test" }
+org-junit-platform-junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
+
+[bundles]
+server-implementation = [
+    "org-springframework-boot-spring-boot-starter-webmvc",
+    "org-springframework-boot-spring-boot-starter-validation"
+]
+server-test-implementation = [
+    "org-springframework-boot-spring-boot-starter-webmvc-test",
+    "org-springframework-boot-spring-boot-starter-validation-test"
+]
+server-test-runtime-only = [
+    "org-junit-platform-junit-platform-launcher"
+]
