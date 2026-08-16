@@ -1,0 +1,6 @@
+/.gradle/
+/.idea/
+/buildSrc/.gradle/
+/buildSrc/build/
+/skymaster-mod/build/
+/skymaster-server/build/
